@@ -62,3 +62,39 @@ async def create_item(item: Item):
     results = main(temp_filename,filetype)
     os.remove(temp_filename)
     return results
+
+
+
+@app.post("/v1/fileupload")
+async def fileupload(image: UploadFile = File(...)):
+        filename = str(image.filename)
+        temp_filename = filename
+        
+        filename = (filename.partition('.'))
+        filetype = filename[2].lower()
+
+        with open(temp_filename,'wb+') as f:
+            f.write(image.file.read())
+            f.close()
+
+        results = main(temp_filename,filetype)
+        os.remove(temp_filename)
+        return results
+
+@app.post("/v1/resumesbase64")
+async def create_item(item: Item):
+    file_data = item.base64file
+    filename = item.file_name
+    temp_filename = filename
+    filename = (filename.partition('.'))
+    filetype = filename[2]
+    file_title= filename[0]
+
+    bytes = b64decode(file_data)
+    with open(temp_filename,'wb+') as f:
+            f.write(bytes)
+            f.close()
+            
+    results = main(temp_filename,filetype)
+    os.remove(temp_filename)
+    return results
