@@ -10,7 +10,7 @@ RUN apk update
 
 RUN apk add make automake gcc g++ subversion python3-dev
 
-ADD repositories /etc/apk/repositories
+
 RUN apk add --update python python-dev gfortran py-pip build-base py-numpy@community
 
 RUN pip3 install --upgrade pip
