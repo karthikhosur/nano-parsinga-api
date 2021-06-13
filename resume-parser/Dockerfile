@@ -11,7 +11,9 @@ RUN apk update
 RUN apk add make automake gcc g++ subversion python3-dev
 
 
-RUN apk add --update python python-dev gfortran py-pip build-base py-numpy@community
+RUN apk add --update --no-cache py3-numpy
+
+ENV PYTHONPATH=/usr/lib/python3.7/site-packages
 
 RUN pip3 install --upgrade pip
 
