@@ -10,7 +10,7 @@ RUN apk update
 
 RUN apk add make automake gcc g++ subversion python3-dev
 
-RUN apt-get install -y libxml2-dev libxslt-dev zlib1g-dev 
+RUN apk add libxml2-dev libxslt-dev zlib1g-dev 
 
 RUN pip3 install --upgrade pip
 RUN pip3 install lxml
