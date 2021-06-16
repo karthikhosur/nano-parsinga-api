@@ -8,7 +8,7 @@ WORKDIR /app
 
 RUN apk update
 
-RUN apk add cython  python3-dev libxml2-dev antiword poppler-utils tesseract-ocr flac ffmpeg lame  swig
+RUN apk add cython  g++ gcc libxslt-dev py-lxml python3-dev libxml2-dev antiword poppler-utils tesseract-ocr flac ffmpeg lame  swig
 
 
 RUN pip3 install -r requirements.txt
