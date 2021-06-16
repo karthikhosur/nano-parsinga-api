@@ -21,7 +21,7 @@ end_heading = "DUCATION|ERSONAL"
 end_heading_2 = "DUCATION|ERSONAL|CADEMIC|Education|Acadmic|Personal"
 
 
-company_end_titles ="Corporation|Institute|Studios|University|Strategists|Limited|LIMITED|LLC|llc|L\.L\.C|limited|LTD|Ltd|LTd|Ltd|Ldt|LDT|ltd|group|Group|GROUP|Bank|Financial Services|Scientific|Technology Solution|Technologies|Consulting|GLOBAL SERVICES|agency|Corp|Scientific"
+company_end_titles ="Corporation|Institute|Studios|University|Strategists|Limited|LIMITED|LLC|llc|L\.L\.C|limited|LTD|Ltd|LTd|Ltd|Ldt|LDT|ltd|group|Group|GROUP|Bank|Financial Services|Scientific|Technology Solution|Technologies|Consulting|GLOBAL SERVICES|Agency|Corp|Scientific"
 not_exp_word = "bjective|summary"
 
 current = "present|current|till|onwards"
@@ -106,7 +106,13 @@ def extract_experience(terms):
         exp_result["exp_history"][0]["job_designation"]= present_designation
         exp_result["workex_skills"] = workex_skill
 
+
+
+
+
         return exp_result,total_dur
+
+
     except:
         return temp_result,"0"
 
@@ -176,6 +182,7 @@ def extract_present_designation(terms):
         terms_txt = ""
         for i in range(len(terms)):
             terms_txt = terms_txt + " "+ terms[i]
+
 
 
 

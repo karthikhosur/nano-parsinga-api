@@ -7,7 +7,6 @@ US_human_names = "SMITH|SWAHILI|HASAN|NAIK|REDDY|GOWDA|JAIN|SINGH|MODI|MANJU|RAM
 
 def name_extractor(text,terms,email_id,file_type):
     try:
-        print(text)
         temp_terms = []
         for i in range(len(terms)):
             if not re.search(name_not,terms[i].lower()):
@@ -18,7 +17,6 @@ def name_extractor(text,terms,email_id,file_type):
 
         name_text =""
         # Solve for DOCX or DOc
-        print(file_type)
         if re.search("docx|doc|pdf",file_type.lower()):
             name_text = first_line_extract(text,terms)
 
@@ -141,23 +139,26 @@ def get_second_name(name_text,terms):
     return name_text
 
 def first_line_extract(text,terms):
+
+    res  =  text.split("\n")
+
+    
     name_text =""
     text_term =""
-    result = text.index('\n')
+    # result = text.index('\n')
 
-    text_term = text[:result]
+    # text_term = text[:result]
+    i =0
+    while len(res[i])<3:
+        i +=1 
+    
+    text_term =res[i]
     name_terms = text_term.split()
     
     for i in range(len(name_terms)):
         if name_terms[i][0].isupper():
             name_text  = name_text +" "+name_terms[i]
 
-    # name_terms = terms[0].split()
-    # if re.search(name_not,name_text.lower()):
-    #     name_text= ""
-    #     for i in range(len(name_terms)):
-    #         if name_terms[i][0].isupper():
-    #             name_text  = name_text +" "+name_terms[i]
 
     return name_text
 

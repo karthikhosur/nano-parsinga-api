@@ -13,7 +13,7 @@ us_states_full = ["alabama","alaska","arizona","arkansas","california","colorado
 personal_info_headings= ["personal"]
 
 
-def extract_address(text):
+def extract_address(text,phone_number):
     try:
         # india code =0 and us code =1 
         country_code = 1 
@@ -29,30 +29,46 @@ def extract_address(text):
         text = re.sub("\.|\-|,"," ",text)
 
 
+
         # Indian Address
 
         #Search for Indian Pincode
-        if re.search(r"\b\d{3}\s{0,1}\d{3}\b",text):
-            ind_pincode =str(re.search(r"\b\d{3}\s{0,1}\d{3}\b",text)[0])
-            if not int(ind_pincode[0])>0 or not int(ind_pincode[0])<9:
+        if re.search(r"\b\d{3}\s{0,1}\d{3}\b",text) :
+            try:
+                ind_pincode =str(re.search(r"\b\d{3}\s{0,1}\d{3}\b",text)[0])
+                ind_pincode = re.sub("\s","",ind_pincode)
+                if  re.search(ind_pincode,phone_number):
+                    ind_pincode = ""
+            except:
                 ind_pincode = ""
             
 
-        if ind_pincode != "":
-            for i in range(len(city_names_india)):
-                if re.search(city_names_india[i],text.lower()) :
-                    if len(re.search(city_names_india[i],text.lower())[0])>4:
-                        indian_city = re.search(city_names_india[i],text.lower())[0]
-                        break
         
-        if indian_city == "" and  ind_pincode == "":
-            if re.search(r"\b\d{5}([-+]?\d{4})?\b",text):
-                us_pincode=str(re.search(r"\b\d{5}([-+]?\d{4})?\b",text)[0])
-            if not int(us_pincode[0])>0 or not int(us_pincode[0])<9:
+        for i in range(len(city_names_india)):
+            if re.search(city_names_india[i],text.lower()) :
+                if len(re.search(city_names_india[i],text.lower())[0])>4:
+                    indian_city = re.search(city_names_india[i],text.lower())[0]
+                    break
+        
+        if indian_city == "" or  ind_pincode == "":
+            try:
+                if re.search(r"\b\d{5}([-+]?\d{4})?\b",text):
+                    us_pincode=str(re.search(r"\b\d{5}([-+]?\d{4})?\b",text)[0])
+                    us_pincode =re.sub("\s","",us_pincode)
+                if re.search(us_pincode,phone_number):
+                    us_pincode =""
+            except:
                 us_pincode =""
 
             if re.search(r"\b\d{5}\b",text):
-                us_pincode = re.search(r"\b\d{5}\b",text)[0]
+                try:
+                    us_pincode = re.search(r"\b\d{5}\b",text)[0]
+                    us_pincode =re.sub("\s","",us_pincode)
+                    if  re.search(us_pincode,phone_number):
+                        us_pincode= ""
+                except:
+                    us_pincode= ""
+
 
             for i in range(len(us_states_short)):
                 if re.search(us_states_short[i],text):
@@ -77,7 +93,6 @@ def extract_address(text):
         if state_name != "":
             country_code=1
             address["place_name"] = state_name
-
             address["city_name"] = state_name
         return address,country_code
     except:
@@ -93,7 +108,6 @@ def extract_dob(text):
         if re.search(dob_words,text):
             date_end = re.search(dob_words,text).end() 
             date_text = text[date_end:date_end+20]
-            print("date : ", date_text)
             if re.search("\d{4}",date_text):
                 date_end = re.search("\d{4}",date_text).end()
                 date_text =date_text[:date_end]

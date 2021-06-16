@@ -160,7 +160,7 @@ def main(file_name,file_type):
                 future1 = executor.submit(email_id_extractor, terms,text)
                 future2 = executor.submit(phone_extraction, terms,text)
                 future3 = executor.submit(skills_extract,text)
-                future4 = executor.submit(extract_address,text)
+                # future4 = executor.submit(extract_address,text)
                 future5 = executor.submit(extract_experience,terms)
                 future6 = executor.submit(extract_education,terms)
                 future7 = executor.submit(industry_class,text)
@@ -169,7 +169,7 @@ def main(file_name,file_type):
                 email_id  = future1.result()
                 isd_code, phone_no = future2.result()
                 skills_list = future3.result()
-                address,country_code= future4.result()
+                # address,country_code= future4.result()
                 exp_result,exp_dur= future5.result()
                 edu_result= future6.result()
                 industry= future7.result()
@@ -178,7 +178,7 @@ def main(file_name,file_type):
 
 
         person_name = name_extractor(text,terms,email_id,file_type)
-
+        address,country_code= extract_address(text,phone_no)
 
         result["personal_info"][0]["name"][0] =person_name
         result["personal_info"][0]["phone"][0] = phone_no
