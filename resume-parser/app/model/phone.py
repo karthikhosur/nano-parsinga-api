@@ -1,17 +1,17 @@
 import re 
-import phonenumbers
+# import phonenumbers
 
 def phone_extraction(terms,text):
     phone_list =[]
     c= 0
-    phone_numbers =  phonenumbers.PhoneNumberMatcher(text, None)
-    try:
-        for pno in phone_numbers:
-            if c==0:
-                phone_list.append(pno.raw_string)
-                c+=1
-    except:
-        phone_list.append(re.findall(r"\s*(?:\+?(\d{1,3}))?[-. (]*(\d{2,3})[-. )]*(\d{2,3})[-. ]*(\d{3,4,5})(?: *x(\d+))?\s*",text))
+    # phone_numbers =  phonenumbers.PhoneNumberMatcher(text, None)
+    # try:
+    #     for pno in phone_numbers:
+    #         if c==0:
+    #             phone_list.append(pno.raw_string)
+    #             c+=1
+    # except:
+    #     phone_list.append(re.findall(r"\s*(?:\+?(\d{1,3}))?[-. (]*(\d{2,3})[-. )]*(\d{2,3})[-. ]*(\d{3,4,5})(?: *x(\d+))?\s*",text))
 
     if len(phone_list) ==0 and re.search(r"\s*(?:\+?(\d{1,3}))?[-. (]*(\d{2,3})[-. )]*(\d{2,3})[-. ]*(\d{3,4,5})(?: *x(\d+))?\s*",text) :
         if len(re.search(r"\s*(?:\+?(\d{1,3}))?[-. (]*(\d{2,3})[-. )]*(\d{2,3})[-. ]*(\d{3,4,5})(?: *x(\d+))?\s*",text)[0])>8 : 

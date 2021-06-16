@@ -1,12 +1,6 @@
 import re
 import os
-from spacy.matcher import Matcher
-from spacy.matcher import PhraseMatcher
-import spacy
 from .skills import skills_extract
-base_path = os.path.dirname(__file__)
-
-nlp = spacy.load('en_core_web_sm')
 
 temp_result = {
     "exp_text": "",
@@ -19,13 +13,6 @@ temp_result = {
     "workex_skills": []
     }
 
-
-file = os.path.join(base_path,"titles_combined.txt")
-file = open(file, "r", encoding='utf-8')
-jobtitle = [line.strip().lower() for line in file]
-jobtitlematcher = PhraseMatcher(nlp.vocab)
-patterns = [nlp.make_doc(text) for text in jobtitle if len(nlp.make_doc(text)) < 10]
-jobtitlematcher.add("Job title", None, *patterns)
 
 
 exp_heading = "XPERIENCE|MPLOYMENT|AREER"
@@ -190,15 +177,7 @@ def extract_present_designation(terms):
         for i in range(len(terms)):
             terms_txt = terms_txt + " "+ terms[i]
 
-        terms_txt = terms_txt.lower()
-        jobtitles =[]
-        nlp_new = nlp(terms_txt)
-        matches = jobtitlematcher(nlp_new)
-        for match_id, start, end in matches:
-            span = nlp_new[start:end]
-            present_designation =  span.text
-            break
-        
+
 
         return present_designation
     except:
