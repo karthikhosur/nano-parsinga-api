@@ -8,7 +8,7 @@ WORKDIR /app
 
 RUN apk update
 
-RUN apk add libxml2-dev libxslt1-dev antiword unrtf poppler-utils pstotext tesseract-ocr flac ffmpeg lame libmad0 libsox-fmt-mp3 sox libjpeg-dev swig
+RUN apk add libxml2-dev antiword poppler-utils tesseract-ocr flac ffmpeg lame  swig
 
 
 RUN pip3 install -r requirements.txt
