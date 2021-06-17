@@ -4,7 +4,7 @@ from .name_parser import name_extractor
 from .email_id import email_id_extractor
 from .phone import phone_extraction
 from .skills import skills_extract
-from .personal_info import extract_address,extract_dob,extract_gender
+from .personal_info import extract_address,extract_dob,extract_gender,passport_no
 from .experience import extract_experience
 from .education import extract_education
 from .industry import industry_class
@@ -90,7 +90,7 @@ result = {
 
 
 def main(file_name,file_type):
-    # try:
+    try:
         s = textract.process(file_name)
         text =str(s, 'utf-8', 'ignore')
         skills_list = []
@@ -166,6 +166,7 @@ def main(file_name,file_type):
                 future7 = executor.submit(industry_class,text)
                 future8 = executor.submit(extract_dob,text)
                 future9 = executor.submit(extract_gender,text)
+                future10 = executor.submit(passport_no,text)
                 email_id  = future1.result()
                 isd_code, phone_no = future2.result()
                 skills_list = future3.result()
@@ -175,7 +176,7 @@ def main(file_name,file_type):
                 industry= future7.result()
                 dob = future8.result()
                 gender= future9.result()
-
+                passport = future10.result()
 
         person_name = name_extractor(text,terms,email_id,file_type)
         address,country_code= extract_address(text,phone_no)
@@ -187,6 +188,7 @@ def main(file_name,file_type):
         result["personal_info"][0]["address"][0] = address
         result["personal_info"][0]["dob"] = dob
         result["personal_info"][0]["gender"] = gender
+        result["personal_info"][0]["passport_no"] = passport
         result["education"] = edu_result
         result["experience"] = exp_result
 
@@ -198,5 +200,5 @@ def main(file_name,file_type):
 
         return result
 
-    # except:
-    #     return result
+    except:
+        return result

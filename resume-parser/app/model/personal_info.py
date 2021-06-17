@@ -103,7 +103,7 @@ def extract_dob(text):
     try:
         birth_date = ""
         match_dob=""
-        dob_words = "Born on|Date of birth|DOB :|DOB|DOB:|DATE OF BIRTH|Birth Date|Birth :|D.O.B|d. o. b|d o b|d  o  b|date and place of birth:|date and place of birth|date and country of birth|dateofbirth|data of birth|date of  birth|birthdate|date of birth/age:|date of birth/age|date of birthage|b\\'date|b’date|date  of  birth|date of birth|date ofbirth|dob|date & place of birth|d.o.b|date of birth|date-of-birth|date   of   birth|BORN:"
+        dob_words = "Born on|Date of birth|Birth|DOB :|DOB|DOB:|DATE OF BIRTH|Birth Date|Birth :|D.O.B|d. o. b|d o b|d  o  b|date and place of birth:|date and place of birth|date and country of birth|dateofbirth|data of birth|date of  birth|birthdate|date of birth/age:|date of birth/age|date of birthage|b\\'date|b’date|date  of  birth|date of birth|date ofbirth|dob|date & place of birth|d.o.b|date of birth|date-of-birth|date   of   birth|BORN:"
         date_text = ""
         if re.search(dob_words,text):
             date_end = re.search(dob_words,text).end() 
@@ -113,6 +113,8 @@ def extract_dob(text):
                 date_text =date_text[:date_end]
             if not re.search("\d{4}|\d{2}",date_text):
                 date_text= ""
+
+        
         return date_text
     except:
         return ""
@@ -129,3 +131,14 @@ def extract_gender(text):
     except:
         return ""
 
+def passport_no(text):
+    try:
+        pno=""
+        passport_regex = "[A-PR-WY][1-9]\\d" +\
+                "\\s?\\d{4}[1-9]"
+        if re.search(passport_regex,text):
+            pno =  re.search(passport_regex,text)[0]
+
+        return pno 
+    except:
+        return ""
