@@ -6,7 +6,7 @@ def email_id_extractor(terms,text):
 
         email_id =""
         email_escape_chars =":|,|\-|=|EMAIL|Email|email"
-
+        text =re.sub("\n"," ",text)
         text =re.sub(email_escape_chars," ",text)
 
         if re.search("\s@",text):

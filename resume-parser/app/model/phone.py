@@ -47,8 +47,13 @@ def phone_extraction(terms,text):
 
 
     isd_code= ""
-
-    isd_code,phone_list = isd_code_extraction(phone_list)
+    if re.search("\+1|\+91|\+971|\+44|\+61|\+81",text):
+        isd_code = re.search("\+1|\+91|\+971|\+44|\+61|\+81",text)[0]
+    
+    
+    
+    
+    temp_isd_code,phone_list = isd_code_extraction(phone_list)
 
     return isd_code,phone_list[0]
 
