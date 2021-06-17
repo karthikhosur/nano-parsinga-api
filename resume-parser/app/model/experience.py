@@ -100,7 +100,7 @@ def extract_experience(terms):
         
         total_dur = duration_experience(terms)
         present_employer = extract_present_employer(terms)
-        present_designation = extract_present_designation(terms)
+        present_designation = extract_present_designation(exp_text)
         workex_skill = skills_extract(exp_text)
 
         exp_result["exp_text"] = exp_text
@@ -191,18 +191,16 @@ def extract_present_employer(terms):
         return ""
 
 
-def extract_present_designation(terms):
+def extract_present_designation(exp_text):
     try:
         present_designation = ""
-        terms_txt = ""
-        k = 0 
-        for i in range(len(terms)):
-            terms_txt = terms_txt + " "+ terms[i].lower()
         
-        print(terms_txt)
-        if re.search(job_titles,terms_txt):
-            present_designation = re.search(job_titles,terms_txt)[0].upper()
+        exp_text = re.sub(":|,|\."," ",exp_text)
 
+        if re.search(job_titles,exp_text.lower()):
+            present_designation = re.search(job_titles,exp_text.lower())[0]
+
+        print(present_designation)
         return present_designation
     except:
         return ""
