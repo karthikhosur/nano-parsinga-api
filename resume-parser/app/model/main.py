@@ -90,7 +90,7 @@ result = {
 
 
 def main(file_name,file_type):
-    try:
+    # try:
         s = textract.process(file_name)
         text =str(s, 'utf-8', 'ignore')
         skills_list = []
@@ -109,7 +109,7 @@ def main(file_name,file_type):
             if re.search("\s[a-zA-Z]{1}\s",terms[i]) :
                 count_split_words +=1
 
-                temp= re.sub("\s","",terms[i])
+                temp= re.sub(" +","",terms[i])
                 if len(temp)< 18:
                     temp_terms.append(temp)
                 else:
@@ -119,10 +119,17 @@ def main(file_name,file_type):
 
         terms =temp_terms
 
+        temp_terms=[]
+
+        for i in range(len(terms)):
+            temp_terms.append(re.sub('\s{2,}', ' ', terms[i]))
+            
+
+        terms = temp_terms
+
 
         for i in range(len(terms)):
             text = text +" "+ terms[i]
-
 
 
 
@@ -200,5 +207,5 @@ def main(file_name,file_type):
 
         return result
 
-    except:
-        return result
+    # except:
+    #     return result
