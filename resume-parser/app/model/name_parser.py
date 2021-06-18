@@ -291,10 +291,10 @@ def select_name_list(name_list,filename):
                     if res[j][0].isupper():
                         name_text = name_list[i]
                         break
-                        
 
 
-    
+
+
     name_text = re.sub("\-|\|","",name_text)
     return name_text
 
