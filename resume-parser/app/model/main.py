@@ -91,7 +91,11 @@ result = {
 
 def main(file_name,file_type):
     # try:
+        
         s = textract.process(file_name)
+
+        filename = re.sub("pdf|doc|docx|\.","",file_name)
+
         text =str(s, 'utf-8', 'ignore')
         skills_list = []
 
@@ -185,7 +189,7 @@ def main(file_name,file_type):
                 gender= future9.result()
                 passport = future10.result()
 
-        person_name = name_extractor(text,terms,email_id,file_type)
+        person_name = name_extractor(text,terms,email_id,file_type,filename)
         address,country_code= extract_address(text,phone_no)
 
         result["personal_info"][0]["name"][0] =person_name
