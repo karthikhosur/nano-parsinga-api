@@ -112,6 +112,13 @@ def extract_university(terms):
         for i in range(len(terms)):
             if re.search("university|institute|academy|college|polytechnic",terms[i].lower()):
                 university_name= terms[i]
+                university_name = re.sub("[^a-zA-Z\s]+"," ",university_name)
+                res = university_name.split()
+                university_name =""
+                for j in range(len(res)):
+                    if  res[j][0].isupper():
+                        university_name += " " +res[j]
+
         return university_name
     except:
         return ""
