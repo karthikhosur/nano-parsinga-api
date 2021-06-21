@@ -191,7 +191,7 @@ def main(file_name,file_type):
 
         person_name = name_extractor(text,terms,email_id,file_type,filename,phone_no)
         address,country_code= extract_address(text,phone_no)
-        if person_name == "":
+        if person_name == "" and re.sub("pdf",file_type):
             s2 = textract.process(file_name, method='tesseract')
             text2 = str(s2, 'utf-8', 'ignore')
             text2 =re.sub(exclude_re," ",text2)
