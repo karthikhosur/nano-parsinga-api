@@ -22,7 +22,7 @@ year_range = "1985|1986|1987|1989|1990|1991|1992|1993|1994|1995|1996|1997|1998|1
 
 def education_txt(terms):
     
-        #Check for Capital Titles
+    #Check for Capital Titles
     chk = 0
     temp_terms = []
     for i in range(len(terms)):
