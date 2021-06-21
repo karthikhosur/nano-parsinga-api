@@ -28,7 +28,7 @@ def extract_address(text,phone_number):
         state_name =""
 
 
-        text = re.sub("\.|\-|,"," ",text)
+        text = re.sub("\.|\-|,|\n"," ",text)
 
 
 
