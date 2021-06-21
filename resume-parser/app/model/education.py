@@ -1,8 +1,8 @@
 import re
 
-edu_headings = "DUCATION|CADEMIC"
+edu_headings = "DUCATION|CADEMIC|EGREE"
 end_headings = "XPERIENCE|MPLOYMENT|AREER|ERSONAL"
-edu_headings_2 ="Education|Academic"
+edu_headings_2 ="Education|Academic|Degrees"
 end_headings_2 = "Personal|Experience"
 
 temp_edu_result = {"edu_text":"",
