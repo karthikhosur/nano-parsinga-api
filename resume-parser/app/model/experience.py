@@ -102,16 +102,23 @@ def extract_experience(terms,text):
         present_designation = extract_present_designation(exp_text,terms)
         workex_skill = skills_extract(exp_text)
 
-        if len(exp_text.split())<6:
+        if len(exp_text.split())<6 or total_dur == "0":
             text = text.lower()
             res = text.split()
-            
+            cnt = 0
             for i in range(len(res)):
                 if re.search("year", res[i].lower()):
                     ind =i
-                    while not re.search("\d",res[ind]):
+                    while not re.search("\d",res[ind]) and cnt<4:
+                        if re.search("\d",res[ind]):
+                            total_dur = res[ind]
+                            total_dur = re.sub("[^0-9]+","",total_dur)
+                            if total_dur == "":
+                                total_dur = "0"
+                            break
+                        cnt = cnt +1
                         ind= ind -1 
-                    total_dur = res[ind]
+                    
 
         exp_result["exp_text"] = exp_text
         exp_result["exp_history"][0]["id"]=str(0)
@@ -136,6 +143,7 @@ def duration_experience(terms):
         two_digit_year_range = "85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20"
         min_year = 2100
         res = []
+        total_dur =0
         
         for i in range(len(terms)):
             temp = terms[i].split()
