@@ -16,7 +16,7 @@ temp_result = {
 
 
 exp_heading = "XPERIENCE|MPLOYMENT|AREER"
-exp_heading_2 = "Experience|ROFESSIONAL|Professional|Career|Employment|E xperience|P rofessional|C areer|E mployment"
+exp_heading_2 = "Experience|ROFESSIONAL|Professional|Career|Employment|E xperience|P rofessional|C areer|E mployment|Work History|WORK HISTORY|WORK"
 end_heading = "DUCATION|ERSONAL"
 end_heading_2 = "DUCATION|ERSONAL|CADEMIC|Education|Acadmic|Personal"
 
@@ -90,7 +90,7 @@ def extract_experience(terms,text):
     exp_text = ""
    
     try:
-        terms=experience_text(terms)
+        terms = experience_text(terms)
 
         for i in range(len(terms)):
             exp_text =exp_text +" "+terms[i]
@@ -100,15 +100,11 @@ def extract_experience(terms,text):
         present_designation = extract_present_designation(exp_text,terms)
         workex_skill = skills_extract(exp_text)
 
-
         exp_result["exp_text"] = exp_text
         exp_result["exp_history"][0]["id"]=str(0)
         exp_result["exp_history"][0]["organization"] = present_employer
         exp_result["exp_history"][0]["job_designation"]= present_designation
         exp_result["workex_skills"] = workex_skill
-
-
-
 
 
         return exp_result,total_dur
