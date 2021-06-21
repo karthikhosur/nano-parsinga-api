@@ -98,7 +98,7 @@ def extract_experience(terms,text):
         for i in range(len(terms)):
             exp_text =exp_text +" "+terms[i]
 
-        print(terms)
+        # print(terms)
         total_dur = duration_experience(terms)
         present_employer = extract_present_employer(exp_text,terms)
         present_designation = extract_present_designation(exp_text)
@@ -149,7 +149,7 @@ def duration_experience(terms):
                 if int(re.search(year_range,res[i])[0]) <min_year:
                     min_year = int(re.search(year_range,res[i])[0])
 
-        print(min_year)
+        # print(min_year)
         if min_year<2022:
             total_dur =2021-min_year
         else :
@@ -256,7 +256,7 @@ def extract_present_designation(exp_text):
         if re.search(job_titles,exp_text.lower()):
             present_designation = re.search(job_titles,exp_text.lower())[0]
 
-        print(present_designation)
+        # print(present_designation)
         return present_designation
     except:
         return ""

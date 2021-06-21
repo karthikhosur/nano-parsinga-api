@@ -90,7 +90,7 @@ result = {
 
 
 def main(file_name,file_type):
-    # try:
+    try:
         
         s = textract.process(file_name)
 
@@ -191,6 +191,17 @@ def main(file_name,file_type):
 
         person_name = name_extractor(text,terms,email_id,file_type,filename,phone_no)
         address,country_code= extract_address(text,phone_no)
+        if person_name == "":
+            s2 = textract.process(file_name, method='tesseract')
+            text2 = str(s2, 'utf-8', 'ignore')
+            text2 =re.sub(exclude_re," ",text2)
+
+            text2 = re.sub("\\xad|\\u200b|\\t"," ", text2)
+            terms2 = text2.splitlines()
+            person_name = name_extractor(text2,terms2,email_id,file_type,filename,phone_no)
+            if phone_no =="":
+                phone_no=phone_extraction(terms2,text2)
+                email_id=email_id_extractor(terms2,text2)
 
         result["personal_info"][0]["name"][0] =person_name
         result["personal_info"][0]["phone"][0] = phone_no
@@ -211,5 +222,5 @@ def main(file_name,file_type):
 
         return result
 
-    # except:
-    #     return result
+    except:
+        return result
