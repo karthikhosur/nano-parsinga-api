@@ -90,7 +90,7 @@ result = {
 
 
 def main(file_name,file_type):
-    try:
+    # try:
         
         s = textract.process(file_name)
 
@@ -194,8 +194,8 @@ def main(file_name,file_type):
 
         return result
 
-    except:
-        return result
+    # except:
+    #     return result
 
 
 
