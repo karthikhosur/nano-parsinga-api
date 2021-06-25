@@ -1,1 +1,1 @@
-"Ph.D","M.Sc","M.Com","M.Ed","M.Tech","M.Sc IT","M.PED","M.Phil","MSF","MSW","M.Pharm","MD/MS","M.A","M.B.A","M.I.T","MSIT","M.C.A","M.E","B.E","B.A","B.Sc","B.C.A","B.B.A","B.Com","B.Ed","B.D.S","B.Pharm","L.L.B","C.A","C.S","L.L.M","B.Tech","B.L","ICWA","PGDM","MBBS","PGDCA","B.PED","B.IT","Diploma"
+"AK|AL|AR|AZ|CA|CO|CT|DC|DE|FL|GA|GU|HI|IA|ID|IL|IN|KS|KY|LA|MA|MD|ME|MI|MN|MO|MS|MT|NC|ND|NE|NH|NJ|NM|NV|NY|OH|OK|OR|PA|PR|RI|SC|SD|TN|TX|UT|VA|VI|VT|WA|WI|WV|WY"
