@@ -200,21 +200,21 @@ def extract_present_employer(exp_text,terms):
         
         if present_employer =="":
             for i in range(len(terms)):
-                if re.search(company_names,terms[i].lower()) and re.search("[A-Z]",terms[i]):
+                if re.search(company_names,terms[i].lower()) and re.search("[A-Z]",terms[i]) and len(terms[i].split())<10:
                     if len(re.search(company_names,terms[i].lower())[0])>4:
                         present_employer = re.search(company_names,terms[i].lower())[0]
                         break
         if present_employer =="":
             for i in range(len(terms)):
                 temp = terms[i] + " "
-                if re.search(us_states_short_text,temp) :
+                if re.search(us_states_short_text,temp) and len(terms[i].split())<10 :
                     present_employer = temp
 
                     present_employer = re.sub("[^a-zA-Z\s]+"," ",present_employer)
-                    if len(present_employer.split())<3:
+                    if len(present_employer.split())<3 :
                         present_employer = ""
                     break
-                if present_employer=="" and  re.search(us_states_full_text,temp):
+                if present_employer=="" and  re.search(us_states_full_text,temp) and len(terms[i].split())<10:
                     present_employer = temp
                 
                     present_employer = re.sub("[^a-zA-Z\s]+"," ",present_employer)
@@ -288,7 +288,7 @@ def extract_present_designation(exp_text,terms):
         
         for i in range(len(terms)):
             temp = " " +terms[i] + " " 
-            if re.search(job_titles,temp.lower()):
+            if re.search(job_titles,temp.lower()) and  len(terms[i].split())<9:
                 present_designation = temp
                 break 
 
@@ -300,9 +300,13 @@ def extract_present_designation(exp_text,terms):
                 present_designation = re.search(job_titles,exp_text.lower())[0]
                 present_designation.capitalize()
                 for i in range(len(terms)):
-                    if re.search(present_designation.lower(),terms[i].lower()) and  len(terms[i].split())<8:
+                    if re.search(present_designation.lower(),terms[i].lower()) and  len(terms[i].split())<9:
                         present_designation = terms[i]
                         break
+        if re.search(present_designation.lower(),job_titles):
+            job_titles_match = re.search(present_designation.lower(),job_titles)[0]
+            jt_index = present_designation.lower().index(job_titles_match)
+            present_designation= present_designation[:jt_index]
         return present_designation
     except:
         return ""
