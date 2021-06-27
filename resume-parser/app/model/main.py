@@ -90,7 +90,7 @@ result = {
 
 
 def main(file_name,file_type):
-    # try:
+    try:
         
         s = textract.process(file_name)
 
@@ -194,37 +194,5 @@ def main(file_name,file_type):
 
         return result
 
-    # except:
-    #     return result
-
-
-
-        # if count_split_words>14 and not re.search("doc|docx",file_type):
-        #     s2 = textract.process(file_name, method='tesseract')
-        #     text2 = str(s2, 'utf-8', 'ignore')
-        #     text2 =re.sub(exclude_re," ",text2)
-
-        #     text2 = re.sub("\\xad|\\u200b|\\t"," ", text2)
-        #     terms2 = text2.splitlines()
-
-        #     with concurrent.futures.ThreadPoolExecutor() as executor:
-        #         future1 = executor.submit(email_id_extractor, terms2,text2)
-        #         future2 = executor.submit(phone_extraction, terms2,text2)
-        #         future3 = executor.submit(skills_extract,text2)
-        #         future4 = executor.submit(extract_address,text2)
-        #         future5 = executor.submit(extract_experience,terms2)
-        #         future6 = executor.submit(extract_education,terms2)
-        #         future7 = executor.submit(industry_class,text2)
-        #         future8 = executor.submit(extract_dob,text2)
-        #         future9 = executor.submit(extract_gender,text2)
-        #         email_id  = future1.result()
-        #         isd_code, phone_no = future2.result()
-        #         skills_list = future3.result()
-        #         address,country_code= future4.result()
-        #         exp_result,exp_dur= future5.result()
-        #         edu_result= future6.result()
-        #         industry= future7.result()
-        #         dob = future8.result()
-        #         gender= future9.result()
-
-        # else:
+    except:
+        return result

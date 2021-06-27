@@ -151,28 +151,28 @@ def extract_degree_title(terms,edu_text,text):
                     break
 
             if degree_title == "":
-                    if re.search("master|MASTER|Master",terms[i]) and degree_title == "":
-                        if re.search("science",terms[i].lower()):
+                    if re.search("master|MASTER|Master|M\.",terms[i]) and degree_title == "":
+                        if re.search("science|m\.sc",terms[i].lower()):
                             degree_title = "M.Sc"
-                        elif re.search("commerce",terms[i].lower()):
+                        elif re.search("commerce|m\.com",terms[i].lower()):
                             degree_title = "M.Com"
-                        elif re.search("education",terms[i].lower()):
+                        elif re.search("education|m\.ed",terms[i].lower()):
                             degree_title = "M.Ed"
-                        elif re.search("tech",terms[i].lower()):
+                        elif re.search("tech|m\.tech",terms[i].lower()):
                             degree_title = "M.Tech"
-                        elif re.search("phil",terms[i].lower()):
+                        elif re.search("phil|m\.phil",terms[i].lower()):
                             degree_title = "M.Phil"
                         elif re.search("finance",terms[i].lower()):
                             degree_title = "MSF" 
                         elif re.search("pharm",terms[i].lower()):
                             degree_title = "M.Pharm" 
-                        elif re.search("arts",terms[i].lower()):
+                        elif re.search("arts|m\.a",terms[i].lower()):
                             degree_title = "M.A" 
-                        elif re.search("business",terms[i].lower()):
+                        elif re.search("business|m\.b\.a",terms[i].lower()):
                             degree_title = "M.B.A" 
-                        elif re.search("engineering",terms[i].lower()):
+                        elif re.search("engineering|m\.e",terms[i].lower()):
                             degree_title = "M.E" 
-                        elif re.search("application",terms[i].lower()):
+                        elif re.search("application|m\.c\.a",terms[i].lower()):
                             degree_title = "M.C.A" 
                         elif re.search("information",terms[i].lower()):
                             degree_title = "MSIT"
@@ -181,18 +181,18 @@ def extract_degree_title(terms,edu_text,text):
                         # else : 
                         #     degree_title = "Masters"
 
-                    if re.search("bachelor|BACHELOR|Bachelor",terms[i]) and degree_title == "":
-                        if re.search("engineering",terms[i].lower()) or  re.search("E",terms[i]):
+                    if re.search("bachelor|BACHELOR|Bachelor|B\.",terms[i]) and degree_title == "":
+                        if re.search("engineering|b\.e",terms[i].lower()) or  re.search("E",terms[i]):
                             degree_title = "B.E"
-                        if re.search("science",terms[i].lower()) or  re.search("S",terms[i]):
+                        if re.search("science|b\.sc",terms[i].lower()) or  re.search("S",terms[i]):
                             degree_title = "B.Sc"
                         if re.search("dental",terms[i].lower()) or  re.search("D",terms[i]):
                             degree_title = "B.D.S"
-                        elif re.search("commerce",terms[i].lower()) or  re.search("C",terms[i]):
+                        elif re.search("commerce|b\.com",terms[i].lower()) or  re.search("C",terms[i]):
                             degree_title = "B.Com"
-                        if re.search("education",terms[i].lower()) or  re.search("Ed|ED",terms[i]):
+                        if re.search("education|b\.ed",terms[i].lower()) or  re.search("Ed|ED",terms[i]):
                             degree_title = "B.Ed"
-                        elif re.search("tech",terms[i].lower()):
+                        elif re.search("tech|b\.tech",terms[i].lower()):
                             degree_title = "B.Tech"
                         elif re.search("phil",terms[i].lower()):
                             degree_title = "B.Phil"
