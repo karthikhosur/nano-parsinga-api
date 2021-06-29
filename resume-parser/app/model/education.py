@@ -1,4 +1,6 @@
 import re
+import concurrent.futures
+
 
 edu_headings = "DUCATION|CADEMIC|EGREE"
 end_headings = "XPERIENCE|MPLOYMENT|AREER|ERSONAL"
@@ -123,9 +125,18 @@ def extract_education(terms,text):
         for i in range(len(terms)):
             edu_text = edu_text+" "+terms[i]
 
-        degree_title = extract_degree_title(terms,edu_text,text)
-        university = extract_university(terms)
-        graduation_year = extract_grad_year(terms)
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future21 = executor.submit(extract_degree_title, terms,edu_text,text)
+            future22 = executor.submit(extract_university,terms)
+            future23 = executor.submit(extract_grad_year,terms)
+            degree_title= future21.result()
+            university = future22.result()
+            graduation_year= future23.result()
+
+        # degree_title = extract_degree_title(terms,edu_text,text)
+        # university = extract_university(terms)
+        # graduation_year = extract_grad_year(terms)
 
 
         edu_result["edu_text"] = edu_text

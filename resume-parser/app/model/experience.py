@@ -1,6 +1,8 @@
 import re
 import os
 from .skills import skills_extract
+import concurrent.futures
+
 
 temp_result = {
     "exp_text": "",
@@ -29,7 +31,7 @@ us_states_short_text = "AK|AL|AR|AZ|CA|CO|CT|DC|DE|FL|GA|GU|HI|IA|ID|IL|IN|KS|KY
 
 us_states_full_text ="Alaska|Alabama|Arkansas|Arizona|California|Colorado|Connecticut|Washington DC|Delaware|Florida|Georgia|Guam|Hawaii|Iowa|Idaho|Illinois|Indiana|Kansas|Kentucky|Louisiana|Massachusetts|Maryland|Maine|Michigan|Minnesota|Missouri|Mississippi|Montana|North Carolina|North Dakota|Nebraska|New Hampshire|New Jersey|New Mexico|Nevada|New York|Ohio|Oklahoma|Oregon|Pennsylvania|Puerto Rico|Rhode Island|South Carolina|South Dakota|Tennessee|Texas|Utah|Virginia|Virgin Islands|Vermont|Washington|Wisconsin|West Virginia|Wyoming|ALASKA|ALABAMA|ARKANSAS|ARIZONA|CALIFORNIA|COLORADO|CONNECTICUT|WASHINGTON DC|DELAWARE|FLORIDA|GEORGIA|GUAM|HAWAII|IOWA|IDAHO|ILLINOIS|INDIANA|KANSAS|KENTUCKY|LOUISIANA|MASSACHUSETTS|MARYLAND|MAINE|MICHIGAN|MINNESOTA|MISSOURI|MISSISSIPPI|MONTANA|NORTH CAROLINA|NORTH DAKOTA|NEBRASKA|NEW HAMPSHIRE|NEW JERSEY|NEW MEXICO|NEVADA|NEW YORK|OHIO|OKLAHOMA|OREGON|PENNSYLVANIA|PUERTO RICO|RHODE ISLAND|SOUTH CAROLINA|SOUTH DAKOTA|TENNESSEE|TEXAS|UTAH|VIRGINIA|VIRGIN ISLANDS|VERMONT|WASHINGTON|WISCONSIN|WEST VIRGINIA|WYOMING"
 
-company_names ="ypf|american express|learningmate`|central puerto|grupo galicia|mastercard|commonwealth|westpac ing|anz|national australia|bhp billiton|telstra|macquarie|wesfarmers|suncorp|qbe insurance|fortescue metals|woolworths|scentre|csl|woodside petroleum|amp|westfield|south32|origin|qantas|agl|vicinity centres|amcor|caltex australia|stockland australia|brambles|transurban|newcrest mining|ramsay health care|goodman|bendigo & adelaide|gpt|map|crown resorts|mirvac| of queensland|bluescope steel|erste |omv|raiffeisen  international|vienna insurance|voestalpine|uniqa|strabag|verbund|ahli united|arab ing|anheuser-busch inbev|kbc|solvay|ageas|ucb|dexia|proximus|colruyt|umicore|xl|athene holding|everest re|arch capital|banco btg pactual participations|assured guaranty|axis capital holdings|signet jewelers|renaissancere holdings|itaú unibanco holding|banco bradesco|banco do brasil|vale|petrobras|eletrobrás|itaúsa|jbs|ultrapar participacoes|cielo|braskem|brf|sabesp|oi|metalurgica gerdau|companhia brasileira de distribuicao|ccr|bm&f bovespa|cpfl energia|kroton educacional|royal  of canada|td | of nova scotia| of montreal|manulife|canadian imperial|brookfield asset management|enbridge|sun life financial|bce|power corp of canada|canadian national railway|magna international|suncor|couche tard|national  of canada|telus|rogers communications|barrick gold|george weston|transcanada|husky|teck resources|agrium|canadian natural resources|canadian pacific railway|fortis|fairfax|onex|cgi|restaurant brands international|hydro one|saputo|cenovus|canadian tire|intact financial|industrial alliance insurance|air canada|valeant pharmaceuticals|bombardier|potashcorp|open text|metro|goldcorp|pacific exploration & production|canadian utilities|pembina pipeline|empire|shaw communications|encana|waste connections|riocan real estate investment trust|emera|paramount res|first quantum minerals|laurentian|hudson's bay|dollarama|falabella|cencosud|antarchile|bci-banco credito|latam airlines|quinenco|banco de chile"
+company_names ="ypf|american express|learningmate|central puerto|grupo galicia|mastercard|commonwealth|westpac ing|anz|national australia|bhp billiton|telstra|macquarie|wesfarmers|suncorp|qbe insurance|fortescue metals|woolworths|scentre|csl|woodside petroleum|amp|westfield|south32|origin|qantas|agl|vicinity centres|amcor|caltex australia|stockland australia|brambles|transurban|newcrest mining|ramsay health care|goodman|bendigo & adelaide|gpt|map|crown resorts|mirvac| of queensland|bluescope steel|erste |omv|raiffeisen  international|vienna insurance|voestalpine|uniqa|strabag|verbund|ahli united|arab ing|anheuser-busch inbev|kbc|solvay|ageas|ucb|dexia|proximus|colruyt|umicore|xl|athene holding|everest re|arch capital|banco btg pactual participations|assured guaranty|axis capital holdings|signet jewelers|renaissancere holdings|itaú unibanco holding|banco bradesco|banco do brasil|vale|petrobras|eletrobrás|itaúsa|jbs|ultrapar participacoes|cielo|braskem|brf|sabesp|oi|metalurgica gerdau|companhia brasileira de distribuicao|ccr|bm&f bovespa|cpfl energia|kroton educacional|royal  of canada|td | of nova scotia| of montreal|manulife|canadian imperial|brookfield asset management|enbridge|sun life financial|bce|power corp of canada|canadian national railway|magna international|suncor|couche tard|national  of canada|telus|rogers communications|barrick gold|george weston|transcanada|husky|teck resources|agrium|canadian natural resources|canadian pacific railway|fortis|fairfax|onex|cgi|restaurant brands international|hydro one|saputo|cenovus|canadian tire|intact financial|industrial alliance insurance|air canada|valeant pharmaceuticals|bombardier|potashcorp|open text|metro|goldcorp|pacific exploration & production|canadian utilities|pembina pipeline|empire|shaw communications|encana|waste connections|riocan real estate investment trust|emera|paramount res|first quantum minerals|laurentian|hudson's bay|dollarama|falabella|cencosud|antarchile|bci-banco credito|latam airlines|quinenco|banco de chile"
 company_end_titles ="Corporation|CORP|Press|PRESS|Inc|INC|Pharmaceuticals|PHARMACEUTICAL|College|LABS|Technology Solutions|Technologies|TECHNOLOGIES|Labs|COMPANY|Company|ORGANISATION|Organisation|HOLDING|Holding|COLLEGE|Learning|LEARNING|Publicity|PUBLICITY|Hospitality|HOSPITALITY|UNIVERISTY|University|International|INSTITUTION|Institution|SCHOOL|Society|SOCIETY|School|ENERGY|Energy|PRIVATE LIMITED|Private Limited|Educational|EDUCATIONAL|Institute|Firm|Studios|University|Strategist|Partners|Strategies|Investments|Systems|Limited|LIMITED|LLC|Health Care|HEALTH CARE|llc|L\.L\.C|limited|LTD|Ltd|LTd|Ltd|Ldt|LDT|ltd|Group|GROUP|Bank|BANK|INVESTMENTS|Solutions|SOLUTIONS|TECHNOLOGY|Financial Services|Financial|FINANCIAL|Scientific|Technology Solution|RESORT|Resort|Spa|SPA|Technologies|Consulting|GLOBAL SERVICES|Agency|Corp|Scientific|AIRWAYS|Airways"
 not_exp_word = "user|bjective|summary|verview|ynopsis|volunteer"
 
@@ -100,11 +102,19 @@ def extract_experience(terms,text):
         terms = experience_text(terms)
         for i in range(len(terms)):
             exp_text =exp_text +" "+terms[i]
-
-        total_dur = duration_experience(terms,text)
-        present_employer = extract_present_employer(exp_text,terms)
-        present_designation = extract_present_designation(exp_text,terms)
-        workex_skill = skills_extract(exp_text)
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future11 = executor.submit(duration_experience, terms,text)
+            future12 = executor.submit(extract_present_employer, exp_text,terms)
+            future13 = executor.submit(extract_present_designation,exp_text,terms)
+            future14 = executor.submit(skills_extract,exp_text)
+            total_dur= future11.result()
+            present_employer = future12.result()
+            present_designation= future13.result()
+            workex_skill = future14.result()
+        # total_dur = duration_experience(terms,text)
+        # present_employer = extract_present_employer(exp_text,terms)
+        # present_designation = extract_present_designation(exp_text,terms)
+        # workex_skill = skills_extract(exp_text)
 
         exp_result["exp_text"] = exp_text
         exp_result["exp_history"][0]["id"]=str(0)
@@ -196,6 +206,7 @@ def extract_present_employer(exp_text,terms):
         # print(terms)
         temp_terms = []
         temp_text = ""
+
         for i in range(len(terms)):
             res= terms[i].split()
             temp_text =""
@@ -204,18 +215,19 @@ def extract_present_employer(exp_text,terms):
                     temp_text = temp_text + " " + res[j]
             temp_terms.append(temp_text)
 
-
+        
         for i in range(len(terms)): 
             if re.search("employer|organisation",terms[i].lower()):
                 present_employer = terms[i]
                 break
-        
-        if present_employer =="":
-            for i in range(len(terms)):
-                if re.search(company_names,terms[i].lower()) and re.search("[A-Z]",terms[i]) and len(terms[i].split())<6:
-                    if len(re.search(company_names,terms[i].lower())[0])>4:
-                        present_employer = re.search(company_names,terms[i].lower())[0]
-                        break
+
+        terms = temp_terms
+        # if present_employer =="":
+        #     for i in range(len(terms)):
+        #         if re.search(company_names,terms[i].lower()) and re.search("[A-Z]",terms[i]) and len(terms[i].split())<6:
+        #             if len(re.search(company_names,terms[i].lower())[0])>4:
+        #                 present_employer = re.search(company_names,terms[i].lower())[0]
+        #                 break
         if present_employer =="":
             for i in range(len(terms)):
                 temp = terms[i] + " "
