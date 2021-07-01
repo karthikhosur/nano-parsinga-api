@@ -9,6 +9,7 @@ from .experience import extract_experience
 from .education import extract_education
 from .industry import industry_class
 import concurrent.futures
+from PIL import Image
 
 
 
@@ -196,3 +197,18 @@ def main(file_name,file_type):
 
     except:
         return result
+
+def business_card(file_name,file_type):
+    
+
+    img = Image.open(file_name).convert('LA')
+    img.save(file_name)
+
+
+    s = textract.process(file_name,encoding='utf_8')
+
+    text =str(s, 'utf-8', 'ignore') 
+
+    print(text)
+
+    return text
