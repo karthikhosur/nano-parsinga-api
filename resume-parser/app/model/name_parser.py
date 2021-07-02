@@ -57,7 +57,7 @@ def name_extractor(text,terms,email_id,file_type,filename,phone):
 
     print(name_list)
     for i in range(len(name_list)):
-        if not re.search(states,name_list[i]) and not re.search(job_titles,name_list[i].lower()) and not re.search("NAME|Name|PERSONAL|Personal|SUMMARY|PROFILE|Profile|EXPERIENCE|Experience|Summary|Contact|CONTACT|OVERVIEW|PROFESSIONAL|Professional|Overview|Roles|ROLES|English|ENGLISH|FRENCH|SPANISH|French|Spanish", name_list[i]): 
+        if not re.search(states,name_list[i]) and not re.search(job_titles,name_list[i].lower()) and not re.search("HIGHEST|Highest|QUALIFICATION|Qualification|NAME|Name|PERSONAL|Personal|SUMMARY|PROFILE|Profile|EXPERIENCE|Experience|Summary|Contact|CONTACT|OVERVIEW|PROFESSIONAL|Professional|Overview|Roles|ROLES|English|ENGLISH|FRENCH|SPANISH|French|Spanish", name_list[i]): 
             temp = re.sub("\s+"," ",name_list[i])
             terms.append(temp)
 
@@ -66,7 +66,6 @@ def name_extractor(text,terms,email_id,file_type,filename,phone):
     name_text = select_name_list(name_list,filename,phone)
     name_text  = name_text_edit(name_text)
     
-
     return name_text
 
 
