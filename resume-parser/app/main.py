@@ -40,6 +40,7 @@ class Item(BaseModel):
     
 class Item1(BaseModel):
     base64file: str
+    file_modified_date:str
     file_name: str
     username: str
     password: str
@@ -130,6 +131,7 @@ async def create_item(item: Item1):
     file_data = item.base64file
     filename = item.file_name
     access_key = item.access_key
+    file_modified_date =item.file_modified_date
     username = item.username
     password = item.password
     
