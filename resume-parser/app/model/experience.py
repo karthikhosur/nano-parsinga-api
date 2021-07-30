@@ -32,7 +32,7 @@ us_states_short_text = "AK|AL|AR|AZ|CA|CO|CT|DC|DE|FL|GA|GU|HI|IA|ID|IL|IN|KS|KY
 us_states_full_text ="Alaska|Alabama|Arkansas|Arizona|California|Colorado|Connecticut|Washington DC|Delaware|Florida|Georgia|Guam|Hawaii|Iowa|Idaho|Illinois|Indiana|Kansas|Kentucky|Louisiana|Massachusetts|Maryland|Maine|Michigan|Minnesota|Missouri|Mississippi|Montana|North Carolina|North Dakota|Nebraska|New Hampshire|New Jersey|New Mexico|Nevada|New York|Ohio|Oklahoma|Oregon|Pennsylvania|Puerto Rico|Rhode Island|South Carolina|South Dakota|Tennessee|Texas|Utah|Virginia|Virgin Islands|Vermont|Washington|Wisconsin|West Virginia|Wyoming|ALASKA|ALABAMA|ARKANSAS|ARIZONA|CALIFORNIA|COLORADO|CONNECTICUT|WASHINGTON DC|DELAWARE|FLORIDA|GEORGIA|GUAM|HAWAII|IOWA|IDAHO|ILLINOIS|INDIANA|KANSAS|KENTUCKY|LOUISIANA|MASSACHUSETTS|MARYLAND|MAINE|MICHIGAN|MINNESOTA|MISSOURI|MISSISSIPPI|MONTANA|NORTH CAROLINA|NORTH DAKOTA|NEBRASKA|NEW HAMPSHIRE|NEW JERSEY|NEW MEXICO|NEVADA|NEW YORK|OHIO|OKLAHOMA|OREGON|PENNSYLVANIA|PUERTO RICO|RHODE ISLAND|SOUTH CAROLINA|SOUTH DAKOTA|TENNESSEE|TEXAS|UTAH|VIRGINIA|VIRGIN ISLANDS|VERMONT|WASHINGTON|WISCONSIN|WEST VIRGINIA|WYOMING"
 
 company_names ="ypf|american express|learningmate|central puerto|grupo galicia|mastercard|commonwealth|westpac ing|anz|national australia|bhp billiton|telstra|macquarie|wesfarmers|suncorp|qbe insurance|fortescue metals|woolworths|scentre|csl|woodside petroleum|amp|westfield|south32|origin|qantas|agl|vicinity centres|amcor|caltex australia|stockland australia|brambles|transurban|newcrest mining|ramsay health care|goodman|bendigo & adelaide|gpt|map|crown resorts|mirvac| of queensland|bluescope steel|erste |omv|raiffeisen  international|vienna insurance|voestalpine|uniqa|strabag|verbund|ahli united|arab ing|anheuser-busch inbev|kbc|solvay|ageas|ucb|dexia|proximus|colruyt|umicore|xl|athene holding|everest re|arch capital|banco btg pactual participations|assured guaranty|axis capital holdings|signet jewelers|renaissancere holdings|itaú unibanco holding|banco bradesco|banco do brasil|vale|petrobras|eletrobrás|itaúsa|jbs|ultrapar participacoes|cielo|braskem|brf|sabesp|oi|metalurgica gerdau|companhia brasileira de distribuicao|ccr|bm&f bovespa|cpfl energia|kroton educacional|royal  of canada|td | of nova scotia| of montreal|manulife|canadian imperial|brookfield asset management|enbridge|sun life financial|bce|power corp of canada|canadian national railway|magna international|suncor|couche tard|national  of canada|telus|rogers communications|barrick gold|george weston|transcanada|husky|teck resources|agrium|canadian natural resources|canadian pacific railway|fortis|fairfax|onex|cgi|restaurant brands international|hydro one|saputo|cenovus|canadian tire|intact financial|industrial alliance insurance|air canada|valeant pharmaceuticals|bombardier|potashcorp|open text|metro|goldcorp|pacific exploration & production|canadian utilities|pembina pipeline|empire|shaw communications|encana|waste connections|riocan real estate investment trust|emera|paramount res|first quantum minerals|laurentian|hudson's bay|dollarama|falabella|cencosud|antarchile|bci-banco credito|latam airlines|quinenco|banco de chile"
-company_end_titles ="Corporation|CORP|Press|PRESS|Inc|INC|Pharmaceuticals|PHARMACEUTICAL|College|LABS|Technology Solutions|Technologies|TECHNOLOGIES|Labs|COMPANY|Company|ORGANISATION|Organisation|HOLDING|Holding|COLLEGE|Learning|LEARNING|Publicity|PUBLICITY|Hospitality|HOSPITALITY|UNIVERISTY|University|International|INSTITUTION|Institution|SCHOOL|Society|SOCIETY|School|ENERGY|Energy|PRIVATE LIMITED|Private Limited|Educational|EDUCATIONAL|Institute|Firm|Studios|University|Strategist|Partners|Strategies|Investments|Systems|Limited|LIMITED|LLC|Health Care|HEALTH CARE|llc|L\.L\.C|limited|LTD|Ltd|LTd|Ltd|Ldt|LDT|ltd|Group|GROUP|Bank|BANK|INVESTMENTS|Solutions|SOLUTIONS|TECHNOLOGY|Financial Services|Financial|FINANCIAL|Scientific|Technology Solution|RESORT|Resort|Spa|SPA|Technologies|Consulting|GLOBAL SERVICES|Agency|Corp|Scientific|AIRWAYS|Airways"
+company_end_titles ="Corporation|CORP|Press|PRESS|Inc|INC|Pharmaceuticals|PHARMACEUTICAL|College|LABS|Technology Solutions|Technologies|TECHNOLOGIES|Labs|COMPANY|Company|ORGANISATION|Organisation|HOLDING|Holding|COLLEGE|Learning|LEARNING|Publicity|PUBLICITY|Hospitality|HOSPITALITY|UNIVERISTY|University|International|Pvt\.Ltd|INSTITUTION|Institution|SCHOOL|Society|SOCIETY|School|ENERGY|Energy|PRIVATE LIMITED|Private Limited|Educational|EDUCATIONAL|Institute|Firm|Studios|University|Strategist|Partners|Strategies|Investments|Systems|Limited|LIMITED|LLC|Health Care|HEALTH CARE|llc|L\.L\.C|limited|LTD|Ltd|LTd|Ltd|Ldt|LDT|ltd|Group|GROUP|Bank|BANK|INVESTMENTS|Solutions|SOLUTIONS|TECHNOLOGY|Financial Services|Financial|FINANCIAL|Scientific|Technology Solution|RESORT|Resort|Spa|SPA|Technologies|Consulting|GLOBAL SERVICES|Agency|Corp|Scientific|AIRWAYS|Airways"
 not_exp_word = "user|bjective|summary|verview|ynopsis|volunteer"
 
 current = "present|current|till|onwards"
@@ -44,7 +44,7 @@ digit_month_range = "1|2|3|4|5|6|7|8|9|10|11|12"
 
 def experience_text(terms):
 
-    #Check for Capital Titles
+    #Check for Capital Titles`
     chk = 0
     temp_terms = []
     for i in range(len(terms)):
@@ -144,13 +144,13 @@ def duration_experience(terms,text):
                 if re.search("year|years",res[i]) :
                     if  "experience" in res[i+1].lower() or "experience" in res[i+2].lower() or "experience" in res[i+3].lower() or  "experience" in res[i+4].lower() or "experience" in res[i+5].lower() or "experience" in res[i-1].lower() or "experience" in res[i-2].lower() or "experience" in res[i-3].lower() :
                         if re.search("\d",res[i-1]):
-                            total_dur = res[i-1] + "+"
+                            total_dur = res[i-1] 
                             break
                         elif re.search("\d",res[i-2]):
-                            total_dur = res[i-2] + "+"
+                            total_dur = res[i-2] 
                             break
                         elif re.search("\d",res[i-3]):
-                            total_dur = res[i-3]  + "+"
+                            total_dur = res[i-3]  
                             break
             except:
                 break
@@ -191,7 +191,7 @@ def duration_experience(terms,text):
                 else :
                     total_dur =0
 
-
+        total_dur = re.sub("\+|\-|\s|[a-zA-Z]","",total_dur)
         return str(total_dur)
     except:
         return "0"
