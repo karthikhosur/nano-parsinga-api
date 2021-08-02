@@ -28,8 +28,8 @@ def extract_address(text,phone_number):
         us_city= ""
         state_name =""
 
-
-        text = re.sub("\.|\-|,|\n"," ",text)
+        us_text= text
+        text = re.sub("\.|\-|,|\\n|\n"," ",text)
 
 
 
@@ -52,7 +52,16 @@ def extract_address(text,phone_number):
                 if len(re.search(city_names_india[i],text.lower())[0])>4:
                     indian_city = re.search(city_names_india[i],text.lower())[0]
                     break
-        
+                
+                
+        # Search for indian state_name 
+        if ind_pincode == "" and indian_city =="":
+            if re.search("andhra pradesh|arunachal pradesh|assam|bihar|chhattisgarh|goa|gujarat|haryana|himachal pradesh|jammu|kashmir|jharkhand|karnataka|kerala|madhya pradesh|maharashtra|manipur|meghalaya|mizoram|nagaland|odisha|orisa|punjab|rajasthan|sikkim|tamil nadu|telangana|tripura|uttar pradesh|uttarakhand|west bengal|pondicherry",text.lower()):
+                indian_city = re.search("andhra pradesh|arunachal pradesh|assam|bihar|chhattisgarh|goa|gujarat|haryana|himachal pradesh|jammu|kashmir|jharkhand|karnataka|kerala|madhya pradesh|maharashtra|manipur|meghalaya|mizoram|nagaland|odisha|orisa|punjab|rajasthan|sikkim|tamil nadu|telangana|tripura|uttar pradesh|uttarakhand|west bengal|pondicherry",text.lower())[0]
+            
+                        
+            
+        text = us_text
         if indian_city == "" or  ind_pincode == "":
             try:
                 if re.search(r"\b\d{5}([-+]?\d{4})?\b",text):
