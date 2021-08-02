@@ -52,17 +52,20 @@ def extract_address(text,phone_number):
                 if len(re.search(city_names_india[i],text.lower())[0])>4:
                     indian_city = re.search(city_names_india[i],text.lower())[0]
                     break
-                
-                
+           
+           
         # Search for indian state_name 
-        if ind_pincode == "" and indian_city =="":
+     
+        if (ind_pincode  != "" and indian_city =="" ) or (ind_pincode == "" and indian_city =="" ):
+        
             if re.search("andhra pradesh|arunachal pradesh|assam|bihar|chhattisgarh|goa|gujarat|haryana|himachal pradesh|jammu|kashmir|jharkhand|karnataka|kerala|madhya pradesh|maharashtra|manipur|meghalaya|mizoram|nagaland|odisha|orisa|punjab|rajasthan|sikkim|tamil nadu|telangana|tripura|uttar pradesh|uttarakhand|west bengal|pondicherry",text.lower()):
-                indian_city = re.search("andhra pradesh|arunachal pradesh|assam|bihar|chhattisgarh|goa|gujarat|haryana|himachal pradesh|jammu|kashmir|jharkhand|karnataka|kerala|madhya pradesh|maharashtra|manipur|meghalaya|mizoram|nagaland|odisha|orisa|punjab|rajasthan|sikkim|tamil nadu|telangana|tripura|uttar pradesh|uttarakhand|west bengal|pondicherry",text.lower())[0]
+                    indian_city = re.search("andhra pradesh|arunachal pradesh|assam|bihar|chhattisgarh|goa|gujarat|haryana|himachal pradesh|jammu|kashmir|jharkhand|karnataka|kerala|madhya pradesh|maharashtra|manipur|meghalaya|mizoram|nagaland|odisha|orisa|punjab|rajasthan|sikkim|tamil nadu|telangana|tripura|uttar pradesh|uttarakhand|west bengal|pondicherry",text.lower())[0]
+                 
+        
             
                         
-            
         text = us_text
-        if indian_city == "" or  ind_pincode == "":
+        if indian_city == "" and  ind_pincode == "":
             try:
                 if re.search(r"\b\d{5}([-+]?\d{4})?\b",text):
                     us_pincode=str(re.search(r"\b\d{5}([-+]?\d{4})?\b",text)[0])
