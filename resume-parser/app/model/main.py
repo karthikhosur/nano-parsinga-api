@@ -12,7 +12,7 @@ import concurrent.futures
 from PIL import Image
 
 
-result = {
+result_template = {
     "personal_info": [
         {
             "name": [
@@ -174,7 +174,7 @@ def main(file_name, file_type):
         #     if phone_no == "":
         #         phone_no = phone_extraction(terms2, text2)
         #         email_id = email_id_extractor(terms2, text2)
-
+        result = result_template
         result["personal_info"][0]["name"][0] = person_name
         result["personal_info"][0]["phone"][0] = phone_no
         result["personal_info"][0]["isd_code"][0] = isd_code
@@ -195,4 +195,4 @@ def main(file_name, file_type):
         return result
 
     except:
-        return result
+        return result_template
