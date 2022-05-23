@@ -15,7 +15,7 @@ from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
-
+import random
 import smtplib
 
 app = FastAPI()
@@ -77,7 +77,7 @@ async def root():
 @app.post("/v2/fileupload")
 def fileupload(image: UploadFile = File(...)):
     filename = str(image.filename)
-    temp_filename = filename
+    temp_filename = str(random.randint(0, 1000))+filename
 
     filename = (filename.partition('.'))
     filetype = filename[2].lower()
@@ -92,7 +92,7 @@ def fileupload(image: UploadFile = File(...)):
 
 
 @app.post("/v2/resumesbase64")
-async def create_item(item: Item):
+def create_item(item: Item):
     file_data = item.base64file
     filename = item.file_name
     temp_filename = filename
