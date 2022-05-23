@@ -78,7 +78,7 @@ async def root():
 def fileupload(image: UploadFile = File(...)):
     filename = str(image.filename)
     temp_filename = str(random.randint(0, 1000))+filename
-
+    print(filename)
     filename = (filename.partition('.'))
     filetype = filename[2].lower()
 
