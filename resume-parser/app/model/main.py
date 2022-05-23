@@ -10,7 +10,6 @@ from .education import extract_education
 from .industry import industry_class
 import concurrent.futures
 from PIL import Image
-from resume_parser import resumeparse
 
 
 result = {
