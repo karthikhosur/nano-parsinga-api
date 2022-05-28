@@ -114,10 +114,9 @@ async def create_item(item: Item):
 async def create_item(item: Item):
     file_data = item.base64file
     filename = item.file_name
-    temp_filename = filename
+    temp_filename = str(random.randint(0, 1000))+filename
     filename = (filename.partition('.'))
     filetype = filename[2]
-    file_title = filename[0]
 
     bytes = b64decode(file_data)
     with open(temp_filename, 'wb+') as f:
