@@ -13,227 +13,257 @@ US_human_names = " SAI | ARJUN | ROY | SUMAN | SMITH | HASAN | NAIK | REDDY | GO
 
 
 def name_extractor(text, terms, email_id, file_type, filename, phone):
-    name_text = ""
-    text = re.sub("SUMMARY|PROFILE|HIGHEST|Highest|Qualification|QUALIFICATION|Profile|EXPERIENCE|Experience|Mail|MAIL|Summary|Contact|CONTACT|OVERVIEW|PROFESSIONAL|Professional|Overview", " ", text)
-    terms = text.split("\n")
-    name_list = []
+    try:
+        name_text = ""
+        text = re.sub("SUMMARY|PROFILE|HIGHEST|Highest|Qualification|QUALIFICATION|Profile|EXPERIENCE|Experience|Mail|MAIL|Summary|Contact|CONTACT|OVERVIEW|PROFESSIONAL|Professional|Overview", " ", text)
+        terms = text.split("\n")
+        name_list = []
 
-    # Take the line 1
-    name_list.append(name_from_line(text))
+        # Take the line 1
+        name_list.append(name_from_line(text))
 
-    #  Name with title
-    name_text = name_from_title(terms)
-    if name_text != "" and not re.search(states, name_text):
-        name_list.append(name_from_title(terms))
+        #  Name with title
+        name_text = name_from_title(terms)
+        if name_text != "" and not re.search(states, name_text):
+            name_list.append(name_from_title(terms))
+            return name_text
+
+        name_list.append(name_from_filename(filename, terms))
+
+        # First Line Name in DOc or docx
+        if re.search("doc|docx|ocx|oc", file_type.lower()):
+            name_list.append(name_from_doc(terms))
+
+        # First line name in pdf
+        if re.search("pdf|df", file_type.lower()):
+            name_list.append(name_from_pdf(terms))
+
+        # Linkedin Name Extract
+        if re.search("linkedin", text.lower()):
+            name_list.append(name_from_linkedin(text))
+
+        # Email Name Extract
+        if re.search("@", email_id):
+            name_list.append(name_from_email_id(terms, email_id))
+
+        # US Name Extract
+        name_list.append(name_from_us(terms))
+
+        # Indian Name Extract
+        name_list.append(name_from_india(terms))
+        temp = ""
+        terms = []
+
+        for i in range(len(name_list)):
+            if not re.search(states, name_list[i]) and not re.search(job_titles, name_list[i].lower()) and not re.search("HIGHEST|Highest|QUALIFICATION|Qualification|NAME|Name|PERSONAL|Personal|SUMMARY|PROFILE|Profile|EXPERIENCE|Experience|Summary|Contact|CONTACT|OVERVIEW|PROFESSIONAL|Professional|Overview|Roles|ROLES|English|ENGLISH|FRENCH|SPANISH|French|Spanish", name_list[i]):
+                temp = re.sub("\s+", " ", name_list[i])
+                terms.append(temp)
+
+        name_list = terms
+        # print(name_list)
+        name_text = select_name_list(name_list, filename, phone)
+        name_text = name_text_edit(name_text)
+
         return name_text
-
-    name_list.append(name_from_filename(filename, terms))
-
-    # First Line Name in DOc or docx
-    if re.search("doc|docx|ocx|oc", file_type.lower()):
-        name_list.append(name_from_doc(terms))
-
-    # First line name in pdf
-    if re.search("pdf|df", file_type.lower()):
-        name_list.append(name_from_pdf(terms))
-
-    # Linkedin Name Extract
-    if re.search("linkedin", text.lower()):
-        name_list.append(name_from_linkedin(text))
-
-    # Email Name Extract
-    if re.search("@", email_id):
-        name_list.append(name_from_email_id(terms, email_id))
-
-    # US Name Extract
-    name_list.append(name_from_us(terms))
-
-    # Indian Name Extract
-    name_list.append(name_from_india(terms))
-    temp = ""
-    terms = []
-
-    for i in range(len(name_list)):
-        if not re.search(states, name_list[i]) and not re.search(job_titles, name_list[i].lower()) and not re.search("HIGHEST|Highest|QUALIFICATION|Qualification|NAME|Name|PERSONAL|Personal|SUMMARY|PROFILE|Profile|EXPERIENCE|Experience|Summary|Contact|CONTACT|OVERVIEW|PROFESSIONAL|Professional|Overview|Roles|ROLES|English|ENGLISH|FRENCH|SPANISH|French|Spanish", name_list[i]):
-            temp = re.sub("\s+", " ", name_list[i])
-            terms.append(temp)
-
-    name_list = terms
-    # print(name_list)
-    name_text = select_name_list(name_list, filename, phone)
-    name_text = name_text_edit(name_text)
-
-    return name_text
+    except:
+        return ""
 
 
 def name_from_doc(terms):
-    name_text = ""
+    try:
+        name_text = ""
 
-    for i in range(len(terms)):
-        temp = re.sub('[^a-zA-Z]+', "", terms[i])
-        if len(temp) > 2:
-            if temp[0].isupper() and len(terms[i].split()) < 10:
-                name_text = terms[i]
-                break
+        for i in range(len(terms)):
+            temp = re.sub('[^a-zA-Z]+', "", terms[i])
+            if len(temp) > 2:
+                if temp[0].isupper() and len(terms[i].split()) < 10:
+                    name_text = terms[i]
+                    break
 
-    return name_text
+        return name_text
+    except:
+        return ""
 
 
 def name_from_pdf(terms):
-    res = terms[:min(5, len(terms))]
-    name_text = ""
-    text_term = ""
-    i = 0
-    while len(res[i]) < 3 or len(res[i].split()) > 5 or re.search(name_not, res[i].lower()):
-        i += 1
-        if i == len(res)-1:
-            break
+    try:
+        res = terms[:min(5, len(terms))]
+        name_text = ""
+        text_term = ""
+        i = 0
+        while len(res[i]) < 3 or len(res[i].split()) > 5 or re.search(name_not, res[i].lower()):
+            i += 1
+            if i == len(res)-1:
+                break
 
-    text_term = res[i]
-    text_term = re.sub("\n|\.|\-|\+|,|(|)|\d", " ", text_term)
-    name_terms = text_term.split()
+        text_term = res[i]
+        text_term = re.sub("\n|\.|\-|\+|,|(|)|\d", " ", text_term)
+        name_terms = text_term.split()
 
-    for i in range(len(name_terms)):
-        if re.search(name_not, name_terms[i].lower()):
-            name_text = ""
-            break
-        if name_terms[i][0].isupper() and len(name_terms[i]) > 3:
-            name_text = name_text + " "+name_terms[i]
+        for i in range(len(name_terms)):
+            if re.search(name_not, name_terms[i].lower()):
+                name_text = ""
+                break
+            if name_terms[i][0].isupper() and len(name_terms[i]) > 3:
+                name_text = name_text + " "+name_terms[i]
 
-    return name_text
+        return name_text
+    except:
+        return ""
 
 
 def name_from_linkedin(text):
-    res = text.split()
-    name_text = ""
-    start = -1
-    for i in range(len(res)):
-        if re.search("linkedin.com", res[i].lower()):
-            name_text = res[i].lower()
-            if not re.search("linkedin.com/in/\n[a-z]|linkedin.com/in/[a-z]", res[i].lower()):
-                name_text = res[i+1].lower()
-            name_text = re.sub("www|\.|http|:|\/|https", "", name_text)
-            name_text = re.sub("linkedincomin", "", name_text)
-            name_text = re.sub("\-|\n", " ", name_text)
-            name_text = re.sub('[^a-zA-Z\s]+', "", name_text)
-            name_text = name_text.upper()
-            break
-    return name_text
+    try:
+        res = text.split()
+        name_text = ""
+        start = -1
+        for i in range(len(res)):
+            if re.search("linkedin.com", res[i].lower()):
+                name_text = res[i].lower()
+                if not re.search("linkedin.com/in/\n[a-z]|linkedin.com/in/[a-z]", res[i].lower()):
+                    name_text = res[i+1].lower()
+                name_text = re.sub("www|\.|http|:|\/|https", "", name_text)
+                name_text = re.sub("linkedincomin", "", name_text)
+                name_text = re.sub("\-|\n", " ", name_text)
+                name_text = re.sub('[^a-zA-Z\s]+', "", name_text)
+                name_text = name_text.upper()
+                break
+        return name_text
+    except:
+        return ""
 
 
 def name_from_email_id(terms, email_id):
-    name_text = ""
-    back_up_username = ""
-    res = []
-    if re.search("@", email_id):
-        username = email_id[:email_id.index("@")]
-        username = re.sub("[^a-zA-Z\._]+", "", username)
-        back_up_username = username
-        if re.search("[a-z]\.[a-z]|[a-z]_[a-z]", username):
-            name_text = username
-            name_text = re.sub("\.|_", " ", name_text.upper())
-        else:
-            temp_username = ""
-            if len(username) > 3:
-                username = username.lower()
-                temp_username = username
-                username = re.sub("\s+", "", username)
-                username = username[:3]
-
-                for i in range(len(terms)):
-                    if re.search(username, terms[i].lower()) and len(terms[i].split()) < 5 and re.search("[A-Z]", terms[i]) and not re.search("@", terms[i]):
-                        name_text = terms[i]
-                        break
-                username = temp_username
-
-                if name_text == "" and len(username) > 5:
-                    username = re.sub("[^a-z]+", "", temp_username)
-                    username = username[-3:]
+    try:
+        name_text = ""
+        back_up_username = ""
+        res = []
+        if re.search("@", email_id):
+            username = email_id[:email_id.index("@")]
+            username = re.sub("[^a-zA-Z\._]+", "", username)
+            back_up_username = username
+            if re.search("[a-z]\.[a-z]|[a-z]_[a-z]", username):
+                name_text = username
+                name_text = re.sub("\.|_", " ", name_text.upper())
+            else:
+                temp_username = ""
+                if len(username) > 3:
+                    username = username.lower()
+                    temp_username = username
+                    username = re.sub("\s+", "", username)
+                    username = username[:3]
 
                     for i in range(len(terms)):
-                        if re.search(username, terms[i].lower()) and re.search("[A-Z]", terms[i]) and not re.search("@", terms[i]):
+                        if re.search(username, terms[i].lower()) and len(terms[i].split()) < 5 and re.search("[A-Z]", terms[i]) and not re.search("@", terms[i]):
                             name_text = terms[i]
                             break
+                    username = temp_username
 
-    if name_text == "":
-        name_text = back_up_username
+                    if name_text == "" and len(username) > 5:
+                        username = re.sub("[^a-z]+", "", temp_username)
+                        username = username[-3:]
 
-    return name_text
+                        for i in range(len(terms)):
+                            if re.search(username, terms[i].lower()) and re.search("[A-Z]", terms[i]) and not re.search("@", terms[i]):
+                                name_text = terms[i]
+                                break
+
+        if name_text == "":
+            name_text = back_up_username
+
+        return name_text
+    except:
+        return ""
 
 
 def name_from_us(terms):
-    name_text = ""
+    try:
+        name_text = ""
 
-    for i in range(len(terms)):
-        if len(terms[i].split()) < 5 or (len(terms[i].split()) < 8 and len(terms[i]) < 25):
-            if re.search("[A-Z]", terms[i]) and not re.search(name_not, terms[i].lower()):
-                if re.search(US_human_names, terms[i].upper()):
+        for i in range(len(terms)):
+            if len(terms[i].split()) < 5 or (len(terms[i].split()) < 8 and len(terms[i]) < 25):
+                if re.search("[A-Z]", terms[i]) and not re.search(name_not, terms[i].lower()):
+                    if re.search(US_human_names, terms[i].upper()):
 
-                    if len(re.search(US_human_names, terms[i].upper())[0]) > 3:
-                        name_text = terms[i]
-                        break
+                        if len(re.search(US_human_names, terms[i].upper())[0]) > 3:
+                            name_text = terms[i]
+                            break
 
-    return name_text
+        return name_text
+    except:
+        return ""
 
 
 def name_from_india(terms):
-    name_text = ""
+    try:
+        name_text = ""
 
-    for i in range(len(terms)):
-        if re.search("personal", terms[i].lower()) and "P" in terms[i]:
-            start = i
-            break
+        for i in range(len(terms)):
+            if re.search("personal", terms[i].lower()) and "P" in terms[i]:
+                start = i
+                break
 
-    terms = terms[i:]
+        terms = terms[i:]
 
-    for i in range(len(terms)):
-        if re.search("name|n ame", terms[i].lower()) and not re.search("father|project|mother|company", terms[i].lower()):
-            name_text = terms[i].lower()
-            name_text = re.sub("name|n ame", " ", name_text)
-            name_text = re.sub("\.|:|=", " ", name_text)
+        for i in range(len(terms)):
+            if re.search("name|n ame", terms[i].lower()) and not re.search("father|project|mother|company", terms[i].lower()):
+                name_text = terms[i].lower()
+                name_text = re.sub("name|n ame", " ", name_text)
+                name_text = re.sub("\.|:|=", " ", name_text)
 
-    return name_text
+        return name_text
+    except:
+        return ""
 
 
 def name_from_title(terms):
-    temp = ""
-    name_text = ""
+    try:
+        temp = ""
+        name_text = ""
 
-    # for i in range(5):
-    #     temp = terms[i].upper()
-    #     temp = re.sub(",", " ", temp)
-    #     temp = re.sub("\.", " ", temp)
-    #     if re.search(name_designation, temp):
-    #         name_text = terms[i]
-    #         name_text = re.sub(",|\.", " ", name_text)
-    #         name_text = re.sub("PMP|PHD|MBA|MSC|CSM|CPA",
-    #                            " ", name_text.upper())
-    #         break
-    return name_text
+        for i in range(5):
+            temp = terms[i].upper()
+            temp = re.sub(",", " ", temp)
+            temp = re.sub("\.", " ", temp)
+            if re.search(name_designation, temp):
+                name_text = terms[i]
+                name_text = re.sub(",|\.", " ", name_text)
+                name_text = re.sub("PMP|PHD|MBA|MSC|CSM|CPA",
+                                   " ", name_text.upper())
+                break
+        return name_text
+    except:
+        return ""
 
 
 def name_from_line(text):
-    name_text = ""
-    res = text.split("\n")
-    if re.search("[A-Z]", res[0]) and len(res[0]) > 4:
-        name_text = res[0]
+    try:
+        name_text = ""
+        res = text.split("\n")
+        if re.search("[A-Z]", res[0]) and len(res[0]) > 4:
+            name_text = res[0]
 
-    return name_text
+        return name_text
+    except:
+        return ""
 
 
 def name_from_filename(filename, terms):
-    filename = re.sub("[^a-zA-Z]+", "", filename)
+    try:
+        filename = re.sub("[^a-zA-Z]+", "", filename)
 
-    filename = filename.lower()
-    filename = re.sub("resume|abc|xyz|pqr|def|", "", filename)
-    filename = filename[:min(4, len(filename))]
-    # print(filename)
-    if len(filename) > 5:
-        for i in range(len(terms)):
-            if filename in terms[i].lower() and len(terms[i].split()) < 10:
-                name_text = terms[i]
-                return name_text
-    return ""
+        filename = filename.lower()
+        filename = re.sub("resume|abc|xyz|pqr|def|", "", filename)
+        filename = filename[:min(4, len(filename))]
+        # print(filename)
+        if len(filename) > 5:
+            for i in range(len(terms)):
+                if filename in terms[i].lower() and len(terms[i].split()) < 10:
+                    name_text = terms[i]
+                    return name_text
+        return ""
+    except:
+        return ""
 
 
 def select_name_list(name_list, filename, phone):
@@ -328,19 +358,22 @@ def select_name_list(name_list, filename, phone):
 
 
 def name_text_edit(name_text):
-    name_text = re.sub("\s+|\-|\|", " ", name_text)
-    name_text = re.sub("[^a-zA-Z\s]+", " ", name_text)
-    res = name_text.split()
-    name_text = ""
-    for i in range(len(res)):
-        if res[i][0].isupper():
-            name_text = name_text+" " + res[i]
-
-    if len(name_text.split()) > 3 and len(name_text) > 22:
+    try:
+        name_text = re.sub("\s+|\-|\|", " ", name_text)
+        name_text = re.sub("[^a-zA-Z\s]+", " ", name_text)
         res = name_text.split()
-        temp = ""
-        for i in range(0, 3):
-            temp = temp + " " + res[i]
-        name_text = temp
+        name_text = ""
+        for i in range(len(res)):
+            if res[i][0].isupper():
+                name_text = name_text+" " + res[i]
 
-    return name_text
+        if len(name_text.split()) > 3 and len(name_text) > 22:
+            res = name_text.split()
+            temp = ""
+            for i in range(0, 3):
+                temp = temp + " " + res[i]
+            name_text = temp
+
+        return name_text
+    except:
+        return ""
