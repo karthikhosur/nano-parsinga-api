@@ -84,7 +84,8 @@ result_template = {
     "text": [
         ""
     ],
-    "industry": ""
+    "industry": "",
+    "terms": []
 }
 
 
@@ -101,7 +102,7 @@ def main(file_name, file_type):
         text = re.sub("\\xad|\\u200b|\\t|\t", " ", text)
         temp_terms = []
         exclude_re = "Bio-Data|BIODATA|RE S U M E|R E S U M E|Bio data|P a g e|biodata|Page|PAGE|page|CURRICULUMVITAE|CURRICULAM VITAE|CURRICULUM VITAE|●|Curriculum Vitae|CV|Resume|RESUME|CONFIDENTIAL|Look forward|My CV is detailed below|Work is Worship|Not keen on sales" + "|DSP MERRILYNCH|Private & Confidential|(Private and Confidential)" + "|Private and Confidential|Please feel free to contact|Moved to" + "|a manager who is……..|Here is the resume of the applicant|trial version can convert" + "|(this message is omitted in registered version)|converted by activertf trial version" + "|planman consulting|referred|reffered|Last active|Last Modified|NOT LOOKING FOR CHANGE" + "|Timesjobs profile|Jobstreet profile|Monster profile|Naukri Profile" + "|click here to view resume in doc format|click here to unsubscribe" + "|Add Comments to Resume|BIO -  DATA|Consultants|Names will be provided on request|circulam vitae|urriculam vitae" + "|Qualification|Total Exp|Skill sets|CIRRUCULAM VITAE|C  U  R  R  I  C  U  L  U  M      V  I  T  A  E" + \
-            "|circulam vitae|urriculam vitae|SAP-|Ref. By|CIRCULAM - VITAE|CIRCULAM-VITAE|job code" + "|i am writing|my objective is|i am confident|currently i am|i am enclosing|my norm is" + "|BIO - DATA|.Curriculum  Vitae|Carriculam Vitae|CIRRICULAM VITAE|CARRICULUM VITAE|urriculum Vitae|CRRICULUM VITAE|CUURICLUM VITAE|urriculum Vitae|- CIRCULLUM VITAE -|DCURRICULAM|CARICULAM VITAE" + "|RICULUM VITAE|CARRICULAM VITAE|Initial Contact - Curriculum Vitae|CIRCULUM VITAE|CIRRICULUM VITAE|comprehensive|URRICULUM  VITAE|CURRICULUM  VITAE|IRCULUM VITAE" + \
+            "|circulam vitae|Curriculum|urriculam vitae|SAP-|Ref. By|CIRCULAM - VITAE|CIRCULAM-VITAE|job code" + "|i am writing|my objective is|i am confident|currently i am|i am enclosing|my norm is" + "|BIO - DATA|.Curriculum  Vitae|Carriculam Vitae|CIRRICULAM VITAE|CARRICULUM VITAE|urriculum Vitae|CRRICULUM VITAE|CUURICLUM VITAE|urriculum Vitae|- CIRCULLUM VITAE -|DCURRICULAM|CARICULAM VITAE" + "|RICULUM VITAE|CARRICULAM VITAE|Initial Contact - Curriculum Vitae|CIRCULUM VITAE|CIRRICULUM VITAE|comprehensive|URRICULUM  VITAE|CURRICULUM  VITAE|IRCULUM VITAE" + \
             "|CURICURUM VITAE|CIRICULAM-REVITA|RESUMẾ|Om Sai Ram|Contact Address :" + "|Age :|Contact No. :|Email Id :|Nationality/Sex :|Languages known :" + \
             "|CARRICULAM VITE|CERTIFIED|POST APPLIED|MICROSOFT CERTIFIED|rRESUME|CONCISE RESUME|View Resume|(Word 2000 Format)|View Text Resume Only|Forward This Resume|Contact by Email|Print Resume|Save to Folder|Close Window|Go to:"
 
@@ -191,7 +192,7 @@ def main(file_name, file_type):
 
         result["text"][0] = text
         result["industry"] = industry
-
+        result["terms"] = terms
         return result
 
     except:
