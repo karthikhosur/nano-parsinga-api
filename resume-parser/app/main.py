@@ -7,6 +7,7 @@ from base64 import b64decode, b64encode
 import base64
 from model.main import main
 import os
+
 import secrets
 import string
 import json
@@ -77,11 +78,14 @@ async def root():
 @app.post("/v2/fileupload")
 async def fileupload(image: UploadFile = File(...)):
     filename = str(image.filename)
+    filename = filename.lower()
     temp_filename = str(random.randint(0, 1000))+filename
     print(filename)
+
     filename = (filename.partition('.'))
     filetype = filename[2].lower()
-
+    if filetype == "doc":
+        temp_filename = temp_filename.replace("doc", "docx")
     with open(temp_filename, 'wb+') as f:
         f.write(image.file.read())
         f.close()
@@ -114,11 +118,16 @@ async def create_item(item: Item):
 async def create_item(item: Item):
     file_data = item.base64file
     filename = item.file_name
+    filename = filename.lower()
     temp_filename = str(random.randint(0, 1000))+filename
     filename = (filename.partition('.'))
     filetype = filename[2]
 
     bytes = b64decode(file_data)
+
+    if filetype == "doc":
+        temp_filename = temp_filename.replace("doc", "docx")
+
     with open(temp_filename, 'wb+') as f:
         f.write(bytes)
         f.close()
