@@ -110,23 +110,23 @@ def create_item(item: Item):
     return results
 
 
-@app.post("/v1/resumesbase64")
-async def create_item(item: Item):
-    file_data = item.base64file
-    filename = item.file_name
-    temp_filename = filename
-    filename = (filename.partition('.'))
-    filetype = filename[2]
-    file_title = filename[0]
+# @app.post("/v1/resumesbase64")
+# async def create_item(item: Item):
+#     file_data = item.base64file
+#     filename = item.file_name
+#     temp_filename = filename
+#     filename = (filename.partition('.'))
+#     filetype = filename[2]
+#     file_title = filename[0]
 
-    bytes = b64decode(file_data)
-    with open(temp_filename, 'wb+') as f:
-        f.write(bytes)
-        f.close()
+#     bytes = b64decode(file_data)
+#     with open(temp_filename, 'wb+') as f:
+#         f.write(bytes)
+#         f.close()
 
-    results = main(temp_filename, filetype)
-    os.remove(temp_filename)
-    return results
+#     results = main(temp_filename, filetype)
+#     os.remove(temp_filename)
+#     return results
 
 
 @app.post("/v3/resumesbase64")
