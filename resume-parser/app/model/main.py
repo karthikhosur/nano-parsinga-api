@@ -85,7 +85,7 @@ result_template = {
         ""
     ],
     "industry": "",
-    "terms: []
+    "terms": []
 }
 
 
