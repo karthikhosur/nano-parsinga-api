@@ -10,7 +10,7 @@ from .education import extract_education
 from .industry import industry_class
 import concurrent.futures
 from PIL import Image
-
+import time
 
 result_template = {
     "personal_info": [
@@ -135,46 +135,45 @@ def main(file_name, file_type):
 
     for i in range(len(terms)):
         text = text + " " + terms[i]
-
-    if 1:
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future1 = executor.submit(email_id_extractor, terms, text)
-            future2 = executor.submit(phone_extraction, terms, text)
-            future3 = executor.submit(skills_extract, text)
-            # future4 = executor.submit(extract_address,text)
-            future5 = executor.submit(extract_experience, terms, text)
-            future6 = executor.submit(extract_education, terms, text)
-            future7 = executor.submit(industry_class, text)
-            future8 = executor.submit(extract_dob, text)
-            future9 = executor.submit(extract_gender, text)
-            future10 = executor.submit(passport_no, text)
-            email_id = future1.result()
-            isd_code, phone_no = future2.result()
-            skills_list = future3.result()
-            # address,country_code= future4.result()
-            exp_result, exp_dur = future5.result()
-            edu_result = future6.result()
-            industry = future7.result()
-            dob = future8.result()
-            gender = future9.result()
-            passport = future10.result()
+    email_id = email_id_extractor(terms, text)
+    isd_code, phone_no = phone_extraction(terms, text)
+    skills_list = skills_extract(text)
+    exp_result, exp_dur = extract_experience(terms, text)
+    edu_result = extract_education(terms, text)
+    industry = industry_class(text)
+    dob = extract_dob(text)
+    gender = extract_gender(text)
+    passport = passport_no(text)
+    time.sleep(2)
+    # if 1:
+    #     with concurrent.futures.ThreadPoolExecutor() as executor:
+    #         future1 = executor.submit(email_id_extractor, terms, text)
+    #         future2 = executor.submit(phone_extraction, terms, text)
+    #         future3 = executor.submit(skills_extract, text)
+    #         # future4 = executor.submit(extract_address,text)
+    #         future5 = executor.submit(extract_experience, terms, text)
+    #         future6 = executor.submit(extract_education, terms, text)
+    #         future7 = executor.submit(industry_class, text)
+    #         future8 = executor.submit(extract_dob, text)
+    #         future9 = executor.submit(extract_gender, text)
+    #         future10 = executor.submit(passport_no, text)
+    #         email_id = future1.result()
+    #         isd_code, phone_no = future2.result()
+    #         skills_list = future3.result()
+    #         # address,country_code= future4.result()
+    #         exp_result, exp_dur = future5.result()
+    #         edu_result = future6.result()
+    #         industry = future7.result()
+    #         dob = future8.result()
+    #         gender = future9.result()
+    #         passport = future10.result()
 
     person_name = name_extractor(
         text, terms, email_id, file_type, filename, phone_no)
+
     address, country_code = extract_address(text, phone_no)
     print(person_name)
-    # if person_name == "" and re.search("pdf", file_name):
-    #     s2 = textract.process(file_name, method='tesseract')
-    #     text2 = str(s2, 'utf-8', 'ignore')
-    #     text2 = re.sub(exclude_re, " ", text2)
 
-    #     text2 = re.sub("\\xad|\\u200b|\\t", " ", text2)
-    #     terms2 = text2.splitlines()
-    #     person_name = name_extractor(
-    #         text2, terms2, email_id, file_type, filename, phone_no)
-    #     if phone_no == "":
-    #         phone_no = phone_extraction(terms2, text2)
-    #         email_id = email_id_extractor(terms2, text2)
     result = result_template
     result["personal_info"][0]["name"][0] = person_name
     result["personal_info"][0]["phone"][0] = phone_no
