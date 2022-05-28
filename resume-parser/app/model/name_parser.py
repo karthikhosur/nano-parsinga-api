@@ -199,16 +199,16 @@ def name_from_title(terms):
     temp = ""
     name_text = ""
 
-    for i in range(5):
-        temp = terms[i].upper()
-        temp = re.sub(",", " ", temp)
-        temp = re.sub("\.", " ", temp)
-        if re.search(name_designation, temp):
-            name_text = terms[i]
-            name_text = re.sub(",|\.", " ", name_text)
-            name_text = re.sub("PMP|PHD|MBA|MSC|CSM|CPA",
-                               " ", name_text.upper())
-            break
+    # for i in range(5):
+    #     temp = terms[i].upper()
+    #     temp = re.sub(",", " ", temp)
+    #     temp = re.sub("\.", " ", temp)
+    #     if re.search(name_designation, temp):
+    #         name_text = terms[i]
+    #         name_text = re.sub(",|\.", " ", name_text)
+    #         name_text = re.sub("PMP|PHD|MBA|MSC|CSM|CPA",
+    #                            " ", name_text.upper())
+    #         break
     return name_text
 
 
