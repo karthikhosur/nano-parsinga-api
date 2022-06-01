@@ -21,6 +21,81 @@ import smtplib
 
 app = FastAPI()
 
+result_template = {
+    "personal_info": [
+        {
+            "name": [
+                ""
+            ],
+            "phone": [
+                ""
+            ],
+            "isd_code": [
+                ""
+            ],
+            "email": [
+                ""
+            ],
+            "url": [
+                ""
+            ],
+            "address": [
+                {
+                    "postal_code": " ",
+                    "place_name": "",
+                    "state_name": "",
+                    "city_name": "",
+                    "area_name": " ",
+                    "longitude": " ",
+                    "latitude": ""
+                }
+            ],
+            "passport_no": "",
+            "dob": "",
+            "gender": ""
+        }
+    ],
+    "education": {
+        "edu_text": "",
+        "edu_history": [
+            {
+                "id": "",
+                "degree": "",
+                "university": "",
+                "grade": "",
+                "graduation_year": ""
+            }
+        ]
+    },
+    "experience": {
+        "exp_text": "",
+        "exp_history": [
+            {
+                "id": "",
+                "organization": "",
+                "job_designation": "",
+                "start_date": "",
+                "end_date": ""
+            }
+        ],
+        "workex_skills": []
+    },
+    "total_experience": "0",
+    "priority_skills": [
+        []
+    ],
+    "all_skills": [
+        []
+    ],
+    "other_sections": [
+        []
+    ],
+    "text": [
+        ""
+    ],
+    "industry": "",
+    "terms": []
+}
 
 app.add_middleware(
     CORSMiddleware,
@@ -116,25 +191,28 @@ async def create_item(item: Item):
 
 @app.post("/v1/resumesbase64")
 async def create_item(item: Item):
-    file_data = item.base64file
-    filename = item.file_name
-    filename = filename.lower()
-    temp_filename = str(random.randint(0, 1000))+filename
-    filename = (filename.partition('.'))
-    filetype = filename[2]
+    try:
+        file_data = item.base64file
+        filename = item.file_name
+        filename = filename.lower()
+        temp_filename = str(random.randint(0, 1000))+filename
+        filename = (filename.partition('.'))
+        filetype = filename[2]
 
-    bytes = b64decode(file_data)
+        bytes = b64decode(file_data)
 
-    if filetype == "doc":
-        temp_filename = temp_filename.replace("doc", "docx")
+        if filetype == "doc":
+            temp_filename = temp_filename.replace("doc", "docx")
 
-    with open(temp_filename, 'wb+') as f:
-        f.write(bytes)
-        f.close()
+        with open(temp_filename, 'wb+') as f:
+            f.write(bytes)
+            f.close()
 
-    results = main(temp_filename, filetype)
-    os.remove(temp_filename)
-    return results
+        results = main(temp_filename, filetype)
+        os.remove(temp_filename)
+        return results
+    except:
+        return result_template
 
 
 @app.post("/v3/resumesbase64")
