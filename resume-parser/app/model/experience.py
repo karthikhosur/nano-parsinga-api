@@ -48,18 +48,21 @@ def experience_text(terms):
     chk = 0
     temp_terms = []
     for i in range(len(terms)):
-        if re.search(exp_heading,terms[i]) and  len(terms[i].split())<4 and not re.search(not_exp_word,terms[i].lower()):
-            temp_terms = terms[i:]
-            chk =1
-            break
+        if "summary" not in terms[i].lower():
+            if re.search(exp_heading,terms[i]) and  len(terms[i].split())<4 and not re.search(not_exp_word,terms[i].lower()):
+                temp_terms = terms[i:]
+                chk =1
+                break
     
     if not len(temp_terms) == 0:
         terms = temp_terms
-
+    
         for i in range(len(terms)):
-            if re.search(end_heading,terms[i]) and  len(terms[i].split())<6:
-                temp_terms =terms[:i]
-                break
+            if "summary" not in terms[i].lower():
+    
+                if re.search(end_heading,terms[i]) and  len(terms[i].split())<6:
+                    temp_terms =terms[:i]
+                    break
 
         terms = temp_terms
     
@@ -68,15 +71,18 @@ def experience_text(terms):
 
         temp_terms = []
         for i in range(len(terms)):
-            if re.search(exp_heading_2,terms[i]) and  len(terms[i].split())<4 and  not re.search(not_exp_word,terms[i].lower()):
-                temp_terms = terms[i:]
-                break
+            if "summary" not in terms[i].lower():
+    
+                if re.search(exp_heading_2,terms[i]) and  len(terms[i].split())<4 and  not re.search(not_exp_word,terms[i].lower()):
+                    temp_terms = terms[i:]
+                    break
         terms = temp_terms
 
         for i in range(len(terms)):
-            if re.search(end_heading_2,terms[i]) and  len(terms[i].split())<6:
-                temp_terms =terms[:i]
-                break
+            if "summary" not in terms[i].lower():
+                if re.search(end_heading_2,terms[i]) and  len(terms[i].split())<6:
+                    temp_terms =terms[:i]
+                    break
 
         terms = temp_terms
 

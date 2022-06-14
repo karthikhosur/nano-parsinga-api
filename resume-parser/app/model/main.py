@@ -1,4 +1,5 @@
-import textract
+import docx
+import pdfplumber
 import re
 from .name_parser import name_extractor
 from .email_id import email_id_extractor
@@ -9,7 +10,7 @@ from .experience import extract_experience
 from .education import extract_education
 from .industry import industry_class
 import concurrent.futures
-from PIL import Image
+import os
 import time
 
 result_template = {
@@ -90,109 +91,131 @@ result_template = {
 
 
 def main(file_name, file_type):
-    # try:
+    try:
+        text = ""
+        # s = textract.process(file_name)
+        file_type = file_type.lower()
+        # if file_type== "doc":
+        #     os.rename(file_name,file_name+'x')
 
-    s = textract.process(file_name)
+        if "doc" in file_type  :
+            doc = docx.Document(file_name)  # Creating word reader object.
+            fullText = ""
+            for para in doc.paragraphs:
+                fullText = fullText + "\n" + (para.text)
 
-    filename = re.sub("pdf|doc|docx|\.", "", file_name)
+            # print(fullText)
+        else:
+            fullText = ""
+            with pdfplumber.open(file_name) as pdf:
+                for i in range(0, len(pdf.pages)):
+                    fullText = fullText + "\n" + pdf.pages[i].extract_text()
+            # print(fullText)
 
-    text = str(s, 'utf-8', 'ignore')
-    skills_list = []
+        text_list = []
+        temp = []
+        temp = fullText.split("\n")
 
-    text = re.sub("\\xad|\\u200b|\\t|\t", " ", text)
-    temp_terms = []
-    exclude_re = "Bio-Data|BIODATA|RE S U M E|R E S U M E|Bio data|P a g e|biodata|Page|PAGE|page|CURRICULUMVITAE|CURRICULAM VITAE|CURRICULUM VITAE|●|Curriculum Vitae|CV|Resume|RESUME|CONFIDENTIAL|Look forward|My CV is detailed below|Work is Worship|Not keen on sales" + "|DSP MERRILYNCH|Private & Confidential|(Private and Confidential)" + "|Private and Confidential|Please feel free to contact|Moved to" + "|a manager who is……..|Here is the resume of the applicant|trial version can convert" + "|(this message is omitted in registered version)|converted by activertf trial version" + "|planman consulting|referred|reffered|Last active|Last Modified|NOT LOOKING FOR CHANGE" + "|Timesjobs profile|Jobstreet profile|Monster profile|Naukri Profile" + "|click here to view resume in doc format|click here to unsubscribe" + "|Add Comments to Resume|BIO -  DATA|Consultants|Names will be provided on request|circulam vitae|urriculam vitae" + "|Qualification|Total Exp|Skill sets|CIRRUCULAM VITAE|C  U  R  R  I  C  U  L  U  M      V  I  T  A  E" + \
-        "|circulam vitae|Curriculum|urriculam vitae|SAP-|Ref. By|CIRCULAM - VITAE|CIRCULAM-VITAE|job code" + "|i am writing|my objective is|i am confident|currently i am|i am enclosing|my norm is" + "|BIO - DATA|.Curriculum  Vitae|Carriculam Vitae|CIRRICULAM VITAE|CARRICULUM VITAE|urriculum Vitae|CRRICULUM VITAE|CUURICLUM VITAE|urriculum Vitae|- CIRCULLUM VITAE -|DCURRICULAM|CARICULAM VITAE" + "|RICULUM VITAE|CARRICULAM VITAE|Initial Contact - Curriculum Vitae|CIRCULUM VITAE|CIRRICULUM VITAE|comprehensive|URRICULUM  VITAE|CURRICULUM  VITAE|IRCULUM VITAE" + \
-        "|CURICURUM VITAE|CIRICULAM-REVITA|RESUMẾ|Om Sai Ram|Contact Address :" + "|Age :|Contact No. :|Email Id :|Nationality/Sex :|Languages known :" + \
-        "|CARRICULAM VITE|CERTIFIED|POST APPLIED|MICROSOFT CERTIFIED|rRESUME|CONCISE RESUME|View Resume|(Word 2000 Format)|View Text Resume Only|Forward This Resume|Contact by Email|Print Resume|Save to Folder|Close Window|Go to:"
+        exclude_re = "Bio-Data|BIODATA|RE S U M E|R E S U M E|Bio data|P a g e|biodata|Page|PAGE|page|CURRICULUMVITAE|CURRICULAM VITAE|CURRICULUM VITAE|●|Curriculum Vitae|CV|Resume|RESUME|CONFIDENTIAL|Look forward|My CV is detailed below|Work is Worship|Not keen on sales" + "|DSP MERRILYNCH|Private & Confidential|(Private and Confidential)" + "|Private and Confidential|Please feel free to contact|Moved to" + "|a manager who is……..|Here is the resume of the applicant|trial version can convert" + "|(this message is omitted in registered version)|converted by activertf trial version" + "|planman consulting|referred|reffered|Last active|Last Modified|NOT LOOKING FOR CHANGE" + "|Timesjobs profile|Jobstreet profile|Monster profile|Naukri Profile" + "|click here to view resume in doc format|click here to unsubscribe" + "|Add Comments to Resume|BIO -  DATA|Consultants|Names will be provided on request|circulam vitae|urriculam vitae" + "|Qualification|Total Exp|Skill sets|CIRRUCULAM VITAE|C  U  R  R  I  C  U  L  U  M      V  I  T  A  E" + \
+            "|circulam vitae|urriculam vitae|SAP-|Ref. By|CIRCULAM - VITAE|CIRCULAM-VITAE|job code" + "|i am writing|my objective is|i am confident|currently i am|i am enclosing|my norm is" + "|BIO - DATA|.Curriculum  Vitae|Carriculam Vitae|CIRRICULAM VITAE|CARRICULUM VITAE|urriculum Vitae|CRRICULUM VITAE|CUURICLUM VITAE|urriculum Vitae|- CIRCULLUM VITAE -|DCURRICULAM|CARICULAM VITAE" + "|RICULUM VITAE|CARRICULAM VITAE|Initial Contact - Curriculum Vitae|CIRCULUM VITAE|CIRRICULUM VITAE|comprehensive|URRICULUM  VITAE|CURRICULUM  VITAE|IRCULUM VITAE" + \
+            "|CURICURUM VITAE|CIRICULAM-REVITA|RESUMẾ|Om Sai Ram|Contact Address :" + "|Age :|Contact No. :|Email Id :|Nationality/Sex :|Languages known :" + \
+            "|CARRICULAM VITE|CERTIFIED|POST APPLIED|MICROSOFT CERTIFIED|rRESUME|CONCISE RESUME|View Resume|(Word 2000 Format)|View Text Resume Only|Forward This Resume|Contact by Email|Print Resume|Save to Folder|Close Window|Go to:"
 
-    text = re.sub(exclude_re, " ", text)
-    terms = text.splitlines()
-    temp = ""
+        for i in temp:
 
-    count_split_words = 0
+            k = re.sub("\\xad|\\u200b|\\t|\t", " ", i)
+            k = re.sub(" +", " ", k)
+            k = re.sub(exclude_re, " ", k)
+            if k == " " or k == "":
+                continue
+            text_list.append(k)
 
-    for i in range(len(terms)):
-        if re.search("\s[a-zA-Z]{1}\s", terms[i]):
-            count_split_words += 1
+        terms = text_list
+        filename = re.sub("pdf|doc|docx|\.", "", file_name)
 
-            temp = re.sub(" +", "", terms[i])
-            if len(temp) < 18:
-                temp_terms.append(temp)
+        count_split_words = 0
+        temp_terms = []
+        for i in range(len(terms)):
+            if re.search("\s[a-zA-Z]{1}\s", terms[i]):
+                count_split_words += 1
+
+                temp = re.sub(" +", "", terms[i])
+                if len(temp) < 18:
+                    temp_terms.append(temp)
+                else:
+                    temp_terms.append(terms[i])
             else:
                 temp_terms.append(terms[i])
-        else:
-            temp_terms.append(terms[i])
 
-    terms = temp_terms
+        terms = temp_terms
 
-    temp_terms = []
+        temp_terms = []
 
-    for i in range(len(terms)):
-        temp_terms.append(re.sub('\s{2,}', ' ', terms[i]))
+        for i in range(len(terms)):
+            temp_terms.append(re.sub('\s{2,}', ' ', terms[i]))
 
-    terms = temp_terms
+        terms = temp_terms
 
-    for i in range(len(terms)):
-        text = text + " " + terms[i]
-    email_id = email_id_extractor(terms, text)
-    isd_code, phone_no = phone_extraction(terms, text)
-    skills_list = skills_extract(text)
-    exp_result, exp_dur = extract_experience(terms, text)
-    edu_result = extract_education(terms, text)
-    industry = industry_class(text)
-    dob = extract_dob(text)
-    gender = extract_gender(text)
-    passport = passport_no(text)
-    time.sleep(2)
-    # if 1:
-    #     with concurrent.futures.ThreadPoolExecutor() as executor:
-    #         future1 = executor.submit(email_id_extractor, terms, text)
-    #         future2 = executor.submit(phone_extraction, terms, text)
-    #         future3 = executor.submit(skills_extract, text)
-    #         # future4 = executor.submit(extract_address,text)
-    #         future5 = executor.submit(extract_experience, terms, text)
-    #         future6 = executor.submit(extract_education, terms, text)
-    #         future7 = executor.submit(industry_class, text)
-    #         future8 = executor.submit(extract_dob, text)
-    #         future9 = executor.submit(extract_gender, text)
-    #         future10 = executor.submit(passport_no, text)
-    #         email_id = future1.result()
-    #         isd_code, phone_no = future2.result()
-    #         skills_list = future3.result()
-    #         # address,country_code= future4.result()
-    #         exp_result, exp_dur = future5.result()
-    #         edu_result = future6.result()
-    #         industry = future7.result()
-    #         dob = future8.result()
-    #         gender = future9.result()
-    #         passport = future10.result()
+        for i in range(len(terms)):
+            text = text + " " + terms[i]
+        email_id = email_id_extractor(terms, text)
+        isd_code, phone_no = phone_extraction(terms, text)
+        skills_list = skills_extract(text)
+        exp_result, exp_dur = extract_experience(terms, text)
+        edu_result = extract_education(terms, text)
+        industry = industry_class(text)
+        dob = extract_dob(text,terms)
+        gender = extract_gender(text)
+        passport = passport_no(text)
+        time.sleep(2)
+        # if 1:
+        #     with concurrent.futures.ThreadPoolExecutor() as executor:
+        #         future1 = executor.submit(email_id_extractor, terms, text)
+        #         future2 = executor.submit(phone_extraction, terms, text)
+        #         future3 = executor.submit(skills_extract, text)
+        #         # future4 = executor.submit(extract_address,text)
+        #         future5 = executor.submit(extract_experience, terms, text)
+        #         future6 = executor.submit(extract_education, terms, text)
+        #         future7 = executor.submit(industry_class, text)
+        #         future8 = executor.submit(extract_dob, text)
+        #         future9 = executor.submit(extract_gender, text)
+        #         future10 = executor.submit(passport_no, text)
+        #         email_id = future1.result()
+        #         isd_code, phone_no = future2.result()
+        #         skills_list = future3.result()
+        #         # address,country_code= future4.result()
+        #         exp_result, exp_dur = future5.result()
+        #         edu_result = future6.result()
+        #         industry = future7.result()
+        #         dob = future8.result()
+        #         gender = future9.result()
+        #         passport = future10.result()
 
-    person_name = name_extractor(
-        text, terms, email_id, file_type, filename, phone_no)
+        person_name = name_extractor(
+            text, terms, email_id, file_type, filename, phone_no)
 
-    address, country_code = extract_address(text, phone_no)
-    print(person_name)
+        address, country_code = extract_address(text, phone_no)
+        print(person_name)
 
-    result = result_template
-    result["personal_info"][0]["name"][0] = person_name
-    result["personal_info"][0]["phone"][0] = phone_no
-    result["personal_info"][0]["isd_code"][0] = isd_code
-    result["personal_info"][0]["email"][0] = email_id
-    result["personal_info"][0]["address"][0] = address
-    result["personal_info"][0]["dob"] = dob
-    result["personal_info"][0]["gender"] = gender
-    result["personal_info"][0]["passport_no"] = passport
-    result["education"] = edu_result
-    result["experience"] = exp_result
+        result = result_template
+        result["personal_info"][0]["name"][0] = person_name
+        result["personal_info"][0]["phone"][0] = phone_no
+        result["personal_info"][0]["isd_code"][0] = isd_code
+        result["personal_info"][0]["email"][0] = email_id
+        result["personal_info"][0]["address"][0] = address
+        result["personal_info"][0]["dob"] = dob
+        result["personal_info"][0]["gender"] = gender
+        result["personal_info"][0]["passport_no"] = passport
+        result["education"] = edu_result
+        result["experience"] = exp_result
 
-    result["total_experience"] = exp_dur
-    result["all_skills"][0] = skills_list
+        result["total_experience"] = exp_dur
+        result["all_skills"][0] = skills_list
 
-    result["text"][0] = text
-    result["industry"] = industry
-    result["terms"] = terms
-    return result
+        result["text"][0] = text
+        result["industry"] = industry
+        result["terms"] = terms
+        return result
 
-    # except:
-    #     return result_template
+    except:
+        return result_template
