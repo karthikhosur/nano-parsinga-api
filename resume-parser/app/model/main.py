@@ -161,7 +161,7 @@ def main(file_name, file_type):
         email_id = email_id_extractor(terms, text)
         isd_code, phone_no = phone_extraction(terms, text)
         skills_list = skills_extract(text)
-        exp_result, exp_dur = extract_experience(terms, text)
+        exp_result,   = extract_experience(terms, text)
         edu_result = extract_education(terms, text)
         industry = industry_class(text)
         dob = extract_dob(text,terms)
@@ -216,6 +216,7 @@ def main(file_name, file_type):
         result["industry"] = industry
         result["terms"] = terms
         return result
-
     except:
         return result_template
+    
+     

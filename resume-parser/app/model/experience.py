@@ -2,6 +2,8 @@ import re
 import os
 from .skills import skills_extract
 import concurrent.futures
+import datefinder
+from dateutil.parser import parse
 
 
 temp_result = {
@@ -20,7 +22,7 @@ temp_result = {
 exp_heading = "XPERIENCE|MPLOYMENT|AREER"
 exp_heading_2 = "Experience|ROFESSIONAL|Professional|Career|Employment|E xperience|P rofessional|C areer|E mployment|Work History|WORK HISTORY|WORK"
 end_heading = "DUCATION|ERSONAL"
-end_heading_2 = "DUCATION|ERSONAL|CADEMIC|Education|Acadmic|Personal"
+end_heading_2 = "DUCATION|ERSONAL|CADEMIC|Education|Academic|Personal"
 
 job_titles_list1 = "account\smanager|data science engineer|ios developer|android developer|python developer|java developer|machine learning engineer||account\splanning\smanager|account\sservices\sexecutive|accountant|accounts\sassistant|accounts\shead|admin\s\-\sexecutive|admin\s\-\shead|admin\s\-\smanager|advertising\s\-\sexecutive|advertising\s\-\smanager|advisor|advocate|agent|air\shostess|alliances\smanager|anaesthetist|analytical\schemistry\sscientist|appraisals\s\-\shead\/manager|area\smanager|area\/territory\ssales\smanager|art\sdirector|artist|assembler|asset\soperations|assistant\smanager|auditor|automotive\sengineer|av\sexecutive|aviation\sengineer|ayurvedic\sdoctor|bancassurance\sexecutive\/manager|banquet\smanager|banquet\ssales|bartender|basic\sresearch\sscientist|bio\-chemist|bio\-technology\sresearch\sscientist|book\skeeper|branch\shead|branch\smanager|brand\smanager|broker|business\sanalyst|business\scenter\smanager|business\sconsultant|business\sdevelopment\sexecutive|business\sdevelopment\smanager|business\seditor|business\splanning\s\-\smanager|business\swriter|buyer\smanager|cameraman|cardiologist|cash\smanagement\soperations|cash\smanager|cash\sofficer|cashier|ceo|channel\ssales\smanager|chartered\saccountant|chef|chemical\sengineer|chemical\sresearch\sscientist|chemist|chief\schef|chief\sengineer|chief\sinformation\sofficer|chief\sof\sbureau|chief\stechnology\sofficer|choreographer|civil\sengineer|claims\smanagement|clearing\shead|clearing\sofficer|clerk|clinical\sresearch\sscientist|club\sfloor\smanager|colonel|commercial\s\-\smanager|company\ssecretary|computer\soperator\/data\sentry|consultant|consumer\sbanking\sasset\soperations|consumer\sbanking\sbranch\shead|consumer\sbanking\scredit\sanalyst|consumer\sbanking\shead|consumer\sbanking\sregion\shead|consumer\sbranch\sbanking\soperations|coordinator|copy\seditor|copy\swriter|corporate\sbanking\sbranch\shead|corporate\sbanking\scredit\sanalyst|corporate\sbanking\scredit\scontrol\smanager|corporate\sbanking\scredit\shead|corporate\sbanking\scustomer\ssupport\smanager|corporate\sbanking\shead|corporate\sbanking\sregion\shead|corporate\scommunications\s\-\sexecutive|corporate\scommunications\s\-\smanager|correspondent\/reporter|cost\saccountant|country\smanager|country\snetwork\scoordinator|creative\sdirector|credit\scontrol|credit\shead\s\-\sconsumer\sbanking|customer\sservice\sexecutive|customer\ssupport\sexecutive|data\sentry\soperator|data\smanagement\/statistics|data\sprocessing\sexecutive|dentist|deputy\schief\sof\sbureau|derivatives\sanalyst|dermatologist|design\smanager\/engineer|designer|despatch\sincharge|dietician|direct\smarketing\s\-\sexecutive|direct\smarketing\s\-\smanager|direct\ssales\sagent\/\scommission\sagent|director\son\sboard|distribution\s\-\shead|doctor|documentation|drug\sregulatory\sdoctor|editor|edp\smanager|electrical\sengineer|electronics\sengineer|ent\sspecialist|environmental\sengineer|events\/\spromotions\smanager|executive\s\-\sinternet\smarketing|executive\ssecretary|express\scentre\s\-\sexecutive|express\scentre\s\-\shead\/\smanager|external\sauditor|external\sconsultant|facilities\smanager\sdirector|factory\smanager|features\seditor|features\swriter|finance\sassistant|finance\shead\/gm\s\-\sfinance|finance\smanager|financial\sanalyst|financial\scontroller|fleet\ssupervisor|floor\ssupervisor|foreign\sexchange\sofficer|foreman|forex\s\-\shead|forex\sdealer|formulation\sscientist|franchisee\scoordinator|freelancer|front\soffice\sexecutive|front\soffice\smanager|gastrologist|gastronomist|gm\s\-\srisks|gm\s\-\streasury|goods\smanufacturing\spractices|graduate\strainee|graphic\sdesigner\/\sanimator|group\shead\s\-\screative|guest\srelations\sexecutive|guest\srelations\smanager|gyanecologist|hardware\sengineer|health\sclub\smanager|hearing\said\stechnician|hepatologist|hostess\/host|house\skeeping\sexecutive|house\skeeping\smanager|house\skeeping\ssupervisor|hr\sadministrator|hr\sexecutive|hr\smanager|hr\srecruiter|instrumentation\sengineer|internal\sauditor|international\sbusiness\sdevelopment\smanager|inventory\scontrol\smanager|investment\sadvisor|key\saccounts\smanager|lab\sassistant|lab\sstaff|lab\stechnician|laundry\smanager|law\sofficer|lawyer|lawyer\/attorney|legal\s\-\shead|legal\sadvisor|legal\sassistant|legal\sconsultant|legal\sservices\s\-\smanager|liason|lighting\stechnician|lobby\s\/\sduty\smanager|logistics\s\-\sco\-ordinator|logistics\s\-\smanager|loss\sprevention\smanager|maintenance\stechnician|management\sconsultant|management\strainee|manager|manager\s\-\sbudgeting|manager\s\-\sdata\sprocessing|manager\s\-\sfinancial\splanning|manager\s\-\sinternet\smarketing|manager\s\-\smigrations|manager\s\-\sservice\sdelivery|manager\s\-\stransitions|manager\streasury|managing\seditor|marine\sengineer|market\sresearch\s\-\sexecutive|market\sresearch\s\-\sfield\sexecutive|market\sresearch\s\-\sfield\ssupervisor|market\sresearch\s\-\smanager|market\sresearch\sexecutive\s\-\squalitative|market\sresearch\smanager|market\srisk\s\-\smanager|marketing\smanager|masseur\sattendant|materials\s\-\shead|materials\smanager|md|mechanical\sengineer|medical\sdean|medical\slab\ssupervisor|medical\sofficer|medical\srepresentative|medical\ssuperintendent|medical\stranscriptionist|merchandiser|microbiologist|mines\sengineer|molecular\sbiologist|money\smarket\sdealer|musician\/music\sdirector|mutual\sfund\sanalyst|national\ssales\smanager|nephrologist|network\sadminitrator|network\sengineer|neurologist|news\seditor|nuclear\smedicine|nurse|nutritionist|occupational\stherapist|oncologist|operation\stheatre\stechnician|operations\sexecutive|operations\smanager|opthalmologist|optometrist|orthopaedist|packaging|pathologist|payrol\sexecutive|payroll\smanager|pediatrician|personnel\smanager|pharmacist|photographer|physician|physiotherapist|pilot|plant\shead|pod\sassistant|pod\sincharge|political\seditor|political\swriter|portfolio\smanager|practice\shead|principal\scorrespondent|print\smanager|printing\stechnologist|private\sbanker|private\spractitioner|process\smanager|process\strainer|product\smanager\s\-\scards|product\smanager\s\-\sinsurance|product\smanager\s\-\smutual\sfunds|product\smanager\/\sproduct\shead|production\smanager|production\smanager\/\sengineer|project\sfinance\sadvisor|project\smanager|proof\sreader|psychiatrist|psycologist|public\srelations\s\-\sexecutive|public\srelations\s\-\smanager|pulmonologist|purchase\s\-\shead|purchase\smanager|purchase\sofficer|quality\sassurance\s\-\smanager|quality\sassurance\sexecutive|radiographer|radiologist|ratings\sanalyst|receptionist|recruitment\s\-\shead|regional\smanager|regional\ssales\smanager|relationship\smanager|research\sassistant|research\sscientist|reservation\smanager|resident\seditor|restaurant\smanager|retail\sstore\smanager|risk\smanager|room\sservice\smanager|safety\sengineer|safety\sofficer|sales\sexecutive|sales\smanager|sales\spromotion\smanager|sales\srepresentative|script\swriter|secretary|security\sanalyst|security\smanager|senior\scorrespondent|senior\smanager|service\sengineer|service\smanager|shares\sservices\sexecutive|shift\sengineer|shift\smanager|shift\ssupervisor|shipment\smanagement|soft\sskills\strainer|software\sdeveloper|software\sengineer|software\stester|solicitor|sound\smixer|sourcing\smanager|stock\sbroker|store\skeeper|strategic\splanning\s\-\smanager|studio\soperations\smanager|sub\seditor|supply\schain\s\-\shead|surgeon|taxation\s\-\smanager|team\sleader|technical\s\-\smanager|technical\sspecialist|technical\ssupport\sexecutive|technical\ssupport\srepresentative|technical\strainer|technical\swriter|technician|technology\stransfer\sengineer|telemarketing\sexecutive|telesales\sexecutive|testing\sengineer|tour\soperator|toxicologist|trading\sadvisor|training\sexecutive|training\smanager|transactions\sprocessing\sexecutive|travel\sagent|treasury\smanager|tv\sanchor|typist|underwriter|vendor\sdevelopment\smanager|visual\smerchandiser|visualiser\sdirector|warehouse\sassistant|workshop\smanager|technical\ssupport|Group Manager|Executive \- Admin and Facilities|Manager \- Workplace Solutions|Office Assistant|Manager \- Global Mobility|Admin Executive|Front Office Executive|Executive Administrative Assistant|Senior Executive \- Admin and Facilities|Enterprise Solutions Architect|Principal Architect|Senior Solution Architect|Senior Technical Architect|Architect|Technical Architect|Associate Technical Architect|Data Analyst|Practitioner \- Accessibility|Associate Architect Testing|Consultant|Architect \- Technical|Associate Architect \- Technical|Tech Lead|Senior Software Engineer|Lead \- Technical|Software Engineer|Team Leader|Tech Lead|Senior Designer|Content Developer|Developer|Senior Developer|Lead \- Content Services|Associate Developer|Technical Lead|Web Developer|Junior Web Developer|Manager \- Content Services|Software Engineer \- DevOps|Business Analyst|Senior Architect \- Content Services|Junior Software Engineer|Director \- Automation|Senior Business Analyst|Scrum Master|Lead \- Analyst|Lead \- Business Analyst|Senior Education Product Specialist|Manager \- Business Analyst|Lead Business Analyst|Director \- Presales|Business Architect|Lead \- Pre Sales|Manager \- Presales|Copy Editor|Associate Solution Architect|Manager \- Pre Sales|Associate Architect \- Design|Associate Architect \- Instructional Design|Lead \- Instructional Designer|Lead Designer|Chief Technology Officer|Executive Assistant|Chief Executive Officer|Sr. Director \- UK Operations|Chief Strategy Officer|Chief Delivery Officer|Jr. Software Engineer|Senior Data Analyst|Director \- Data Insights|Project Manager|Lead \- Business Intelligence|Senior Project Manager|Manager \- Design|Graphic Designer|Senior Visualiser|Visualizer|Illustrator|Lead \- Designer|Senior Visualizer|Senior Illustrator|Lead \- Design|Designer \- Digital Media|Senior Designer|Rapid Authoring Developer|Associate Architect \- Digital Media|Skill Manager \- Design|Senior Technical Lead|Senior Manager \- Dot Net|Content Editor|Director of Learning Design|Director of Content Development|Learning Design Strategist|Senior Instructional Designer|Vice President|Associate Developmental Editor|Content Developer|Editor|Director Publisher Relationships|Senior Editor|Director K\-12 & Assessment|Associate Editor|Chief Architect|Data Scientist|Coordinator \- Accounts|Senior Manager \- Accounts and Finance|Senior Manager \- Finance & Compliance|Director \- Accounts and Finance|Financial Controller|Executive \- Accounts|Senior Manager\- Information Analyst|Assistant Manager \- Accounts|Senior Executive \- Accounts|Senior Executive \- Talent Acquisition|Manager \- Learning and Development|Senior Director \- Kolkata Operations|Senior Manager \- Talent Engagement|Global HR Head|Manager \- Talent Acquisition|Human Resources Business Partner|Senior Executive \- Talent Engagement|VP \- Human Resources|Lead \- Talent Acquisition|Executive \- Talent Acquisition|Senior Executive \- Payroll and Compensation|Lead \- Payroll and Compensation|Manager \- Human Resources|Executive \- Talent Development|Senior DevOps Engineer|Associate Architect \- DevOps|Sr. System Engineer|Senior System Engineer \- IT Support|Lead IT \- System Support|Lead \- DevOps|Lead \- Support|Desktop Lead|Senior System Engineer \- Production Support|Architect \- DevOps|Devops Engineer|Business Development Manager|Instructional Designer|Manager \- Instructional Design|Senior Content Developer|Senior Copy Editor|Manager \- Instructional Designer|Lead \- Copy Editor|Director \- Instructional Design|Lead Java Developer|AVP Engagement Management|Lead \- Business Analyst PreSales|Marketing Manager|Executive \- MIS|Director \- Mobility and Accessibility|Skill Manager \- MAD|Director PHP|PowerSchool Technical Lead|Sr. Systems Engineer \- ADE|Project Leader|Manager \- Projects|Director \- Projects|Delivery Manager|Associate Project Manager|Lead \- Projects|Account Director|Project Coordinator|Senior Manager \- Projects|Senior Director \- Projects|Product Owner|Product Development Manager|Account Manager|Program Manager|Support Engineer|Senior Account Manager|Project Director|Senior Manager \- Products|Associate Manager \- Projects|Manager Skill\-SME|Senior Coordinator \- Projects|Support Manager|Senior Project Coordinator|Quality Analyst|Director \- Quality|Assistant Manager\- Quality Analyst|Senior Quality Analyst|Senior Research Associate|Director \- Research and Advisory Services|Lead \- Research Analyst|Manager \- Business Development|Coordinator \- Supplier Outsourcing|Manager \- Supplier Outsourcing|Associate \- Resource Management|Assistant Manager \- Resource Management|Director \- SMT & RMG|Business Development Executive|Business Development \- Sales|Director \- Sales|Sales Director|Sales Director| Higher Education|VP of Strategic Partnerships| HE|Junior Content Developer|Senior Developer \- Content|Associate Content Developer|Senior Coordinator \- Supplier Outsourcing|System Engineer \- IT Support|Director \- IT|IT Support Engineer|Manager \- IT|Lead System Engineer \- IT Support|IT Suport Engineer|Lead Engineer \- IT Support|Assistant Manager \- Systems|Senior Test Engineer|Test Engineer|Lead \- Testing|Test Lead|Performance Testing|Test Engineer|Test Architect|Senior User Interface Developer|UI/UX Designer|Sr. User Interface Designer|Senior Designer \- UI/UX|Senior UI/UX Developer|Lead \- UI/UX|Senior Developer \- UI/UX|Director \- Content Management Solutions|Architect \- UI/UX|User Interface Designer|UI Developer|UI/UX Architect"
 
@@ -48,7 +50,7 @@ def experience_text(terms):
     chk = 0
     temp_terms = []
     for i in range(len(terms)):
-        if "summary" not in terms[i].lower():
+        if not re.search("summary|snapshot",terms[i].lower()):
             if re.search(exp_heading,terms[i]) and  len(terms[i].split())<4 and not re.search(not_exp_word,terms[i].lower()):
                 temp_terms = terms[i:]
                 chk =1
@@ -58,7 +60,7 @@ def experience_text(terms):
         terms = temp_terms
     
         for i in range(len(terms)):
-            if "summary" not in terms[i].lower():
+            if not re.search("summary|snapshot",terms[i].lower()):
     
                 if re.search(end_heading,terms[i]) and  len(terms[i].split())<6:
                     temp_terms =terms[:i]
@@ -71,7 +73,7 @@ def experience_text(terms):
 
         temp_terms = []
         for i in range(len(terms)):
-            if "summary" not in terms[i].lower():
+            if not re.search("summary|snapshot",terms[i].lower()):
     
                 if re.search(exp_heading_2,terms[i]) and  len(terms[i].split())<4 and  not re.search(not_exp_word,terms[i].lower()):
                     temp_terms = terms[i:]
@@ -79,285 +81,312 @@ def experience_text(terms):
         terms = temp_terms
 
         for i in range(len(terms)):
-            if "summary" not in terms[i].lower():
+            if not re.search("summary|snapshot",terms[i].lower()):
                 if re.search(end_heading_2,terms[i]) and  len(terms[i].split())<6:
                     temp_terms =terms[:i]
                     break
 
         terms = temp_terms
-
+    
 
     return terms 
 
 
 
 def extract_experience(terms,text):
-    exp_result = {
-    "exp_text": "",
-    "exp_history": 
-        [{"id": "",
-        "organization": "",
-        "job_designation": "",
-        "start_date": "",
-        "end_date": ""}],
-    "workex_skills": []
-    }
+        exp_result = {
+        "exp_text": "",
+        "exp_history": 
+            [{"id": "",
+            "organization": "",
+            "job_designation": "",
+            "start_date": "",
+            "end_date": ""}],
+        "workex_skills": []
+        }
     
-    exp_text = ""
-    try:
+        exp_text = ""
+    
         terms = experience_text(terms)
         for i in range(len(terms)):
             exp_text =exp_text +" "+terms[i]
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future11 = executor.submit(duration_experience, terms,text)
-            future12 = executor.submit(extract_present_employer, exp_text,terms)
-            future13 = executor.submit(extract_present_designation,exp_text,terms)
-            future14 = executor.submit(skills_extract,exp_text)
-            total_dur= future11.result()
-            present_employer = future12.result()
-            present_designation= future13.result()
-            workex_skill = future14.result()
-        # total_dur = duration_experience(terms,text)
+        # with concurrent.futures.ThreadPoolExecutor() as executor:
+        #     future11 = executor.submit(duration_experience, terms,text)
+        #     # future12 = executor.submit(extract_present_employer, exp_text,terms)
+        #     # future13 = executor.submit(extract_present_designation,exp_text,terms)
+        #     # future14 = executor.submit(skills_extract,exp_text)
+        #     total_dur= future11.result()
+            # present_employer = future12.result()
+            # present_designation= future13.result()
+            # workex_skill = future14.result()
+        total_dur = duration_experience(terms,text)
         # present_employer = extract_present_employer(exp_text,terms)
         # present_designation = extract_present_designation(exp_text,terms)
         # workex_skill = skills_extract(exp_text)
 
         exp_result["exp_text"] = exp_text
         exp_result["exp_history"][0]["id"]=str(0)
-        exp_result["exp_history"][0]["organization"] = present_employer
-        exp_result["exp_history"][0]["job_designation"]= present_designation
-        exp_result["workex_skills"] = workex_skill
+        # exp_result["exp_history"][0]["organization"] = present_employer
+        # exp_result["exp_history"][0]["job_designation"]= present_designation
+        # exp_result["workex_skills"] = workex_skill
 
 
         return exp_result,total_dur
 
 
-    except:
-        return temp_result,"0"
 
 def duration_experience(terms,text):
-    try:
-        total_dur = ""
-        text_piece = re.sub('[^A-Za-z0-9. ]+', ' ', text)
-        text_piece = re.sub("\. | \.",".",text_piece)
-        text_piece= text_piece.lower()
-        res = text_piece.split()
-        list_dur = []
-        temp_dur = 0
-        last = ""
-        for i in range(len(res)):
-            try :
-                if re.search("year|years",res[i]) :
-                    if  "experience" in res[i+1].lower() or "experience" in res[i+2].lower() or "experience" in res[i+3].lower() or  "experience" in res[i+4].lower() or "experience" in res[i+5].lower() or "experience" in res[i-1].lower() or "experience" in res[i-2].lower() or "experience" in res[i-3].lower() :
-                        if re.search("\d",res[i-1]):
-                            total_dur = res[i-1] 
-                            break
-                        elif re.search("\d",res[i-2]):
-                            total_dur = res[i-2] 
-                            break
-                        elif re.search("\d",res[i-3]):
-                            total_dur = res[i-3]  
-                            break
-            except:
-                break
-        if total_dur == "":
-            year_range = "1985|1986|1987|1989|1990|1991|1992|1993|1994|1995|1996|1997|1998|1999|2000|2001|2002|2003|2004|2005|2006|2007|2008|2009|2010|2011|2012|2013|2014|2015|2016|2017|2018|2019|2020|2021"
-            two_digit_year_range = "85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20"
-            min_year = 2100
-            res = []
-            total_dur =0
+    full_year_range = "1985|1986|1987|1989|1990|1991|1992|1993|1994|1995|1996|1997|1998|1999|2000|2001|2002|2003|2004|2005|2006|2007|2008|2009|2010|2011|2012|2013|2014|2015|2016|2017|2018|2019|2020|2021|2022"
+    two_digit_year_range = "85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|22"
+    months = "01|02|03|04|05|06|07|08|09|10|11|12"
+    months_words = "jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec"
+    current_year = "current|till|present"
+    year_ranges = []
+    for i in range(len(terms)):
+        if re.search(full_year_range,terms[i].lower()):
+            year_ranges.append(terms[i])
+        elif re.search(two_digit_year_range,terms[i].lower()):
+            year_ranges.append(terms[i])
+        elif re.search(current_year,terms[i].lower()):
+            year_ranges.append(terms[i])
+        
+    print(year_ranges)
+    matches = []
+    experience_ranges = []
+    for i in range(len(year_ranges)):
+        experience_ranges.append(parse(year_ranges[i], fuzzy_with_tokens=True))
+    
+    print(experience_ranges)
+    #     matches = datefinder.find_dates(year_ranges[i])
+    #     print(matches)
+    
+    # print(experience_ranges)
+    
+    
+        
+        
+#     try:
+#         total_dur = ""
+#         text_piece = re.sub('[^A-Za-z0-9. ]+', ' ', text)
+#         text_piece = re.sub("\. | \.",".",text_piece)
+#         text_piece= text_piece.lower()
+#         res = text_piece.split()
+#         list_dur = []
+#         temp_dur = 0
+#         last = ""
+#         for i in range(len(res)):
+#             try :
+#                 if re.search("year|years",res[i]) :
+#                     if  "experience" in res[i+1].lower() or "experience" in res[i+2].lower() or "experience" in res[i+3].lower() or  "experience" in res[i+4].lower() or "experience" in res[i+5].lower() or "experience" in res[i-1].lower() or "experience" in res[i-2].lower() or "experience" in res[i-3].lower() :
+#                         if re.search("\d",res[i-1]):
+#                             total_dur = res[i-1] 
+#                             break
+#                         elif re.search("\d",res[i-2]):
+#                             total_dur = res[i-2] 
+#                             break
+#                         elif re.search("\d",res[i-3]):
+#                             total_dur = res[i-3]
+#                             break
+#             except:
+#                 break
+#         if total_dur == "":
+#             year_range = "1985|1986|1987|1989|1990|1991|1992|1993|1994|1995|1996|1997|1998|1999|2000|2001|2002|2003|2004|2005|2006|2007|2008|2009|2010|2011|2012|2013|2014|2015|2016|2017|2018|2019|2020|2021"
+#             two_digit_year_range = "85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20"
+#             min_year = 2100
+#             res = []
+#             total_dur =0
             
-            for i in range(len(terms)):
-                temp = terms[i].split()
-                res = res + temp
+#             for i in range(len(terms)):
+#                 temp = terms[i].split()
+#                 res = res + temp
 
-            for i in range(len(res)):
-                if re.search(year_range,res[i]):
+#             for i in range(len(res)):
+#                 if re.search(year_range,res[i]):
                     
-                    if int(re.search(year_range,res[i])[0]) <min_year:
-                        min_year = int(re.search(year_range,res[i])[0])
+#                     if int(re.search(year_range,res[i])[0]) <min_year:
+#                         min_year = int(re.search(year_range,res[i])[0])
 
-            if min_year<2022:
-                total_dur =2020-min_year
-            else :
-                total_dur =0
+#             if min_year<2022:
+#                 total_dur =2020-min_year
+#             else :
+#                 total_dur =0
 
-            min_year = 2100
-            if total_dur == 0:
-                for i in range(len(res)):
-                        if re.search(two_digit_year_range,res[i]):
-                            if int(re.search(two_digit_year_range,res[i])[0])<21:
-                                min_year = int(re.search(two_digit_year_range,res[i])[0])+2000
-                            elif int(re.search(two_digit_year_range,res[i])[0])>84:
-                                min_year = int(re.search(two_digit_year_range,res[i])[0])+1900
-
-
-                if min_year<2021:
-                    total_dur =2020-min_year
-                else :
-                    total_dur =0
-
-        total_dur = re.sub("\+|\-|\s|[a-zA-Z]","",total_dur)
-        return str(total_dur)
-    except:
-        return "0"
+#             min_year = 2100
+#             if total_dur == 0:
+#                 for i in range(len(res)):
+#                         if re.search(two_digit_year_range,res[i]):
+#                             if int(re.search(two_digit_year_range,res[i])[0])<21:
+#                                 min_year = int(re.search(two_digit_year_range,res[i])[0])+2000
+#                             elif int(re.search(two_digit_year_range,res[i])[0])>84:
+#                                 min_year = int(re.search(two_digit_year_range,res[i])[0])+1900
 
 
-def extract_present_employer(exp_text,terms):
-    try:
-        match = ""
-        end_index = -1
-        present_employer = ""
-        terms = terms[:min(len(terms),10)]
-        # print(terms)
-        temp_terms = []
-        temp_text = ""
+#                 if min_year<2021:
+#                     total_dur =2020-min_year
+#                 else :
+#                     total_dur =0
 
-        for i in range(len(terms)):
-            res= terms[i].split()
-            temp_text =""
-            for j in range(len(res)):
-                if re.search("[A-Z]",res[j][0]):
-                    temp_text = temp_text + " " + res[j]
-            temp_terms.append(temp_text)
+#         total_dur = re.sub("\+|\-|\s|[a-zA-Z]","",total_dur)
+#         return str(total_dur)
+#     except:
+#         return "0"
+
+
+# def extract_present_employer(exp_text,terms):
+#     try:
+#         match = ""
+#         end_index = -1
+#         present_employer = ""
+#         terms = terms[:min(len(terms),10)]
+#         # print(terms)
+#         temp_terms = []
+#         temp_text = ""
+
+#         for i in range(len(terms)):
+#             res= terms[i].split()
+#             temp_text =""
+#             for j in range(len(res)):
+#                 if re.search("[A-Z]",res[j][0]):
+#                     temp_text = temp_text + " " + res[j]
+#             temp_terms.append(temp_text)
 
         
-        for i in range(len(terms)): 
-            if re.search("employer|organisation",terms[i].lower()):
-                present_employer = terms[i]
-                break
+#         for i in range(len(terms)): 
+#             if re.search("employer|organisation",terms[i].lower()):
+#                 present_employer = terms[i]
+#                 break
 
-        terms = temp_terms
-        # if present_employer =="":
-        #     for i in range(len(terms)):
-        #         if re.search(company_names,terms[i].lower()) and re.search("[A-Z]",terms[i]) and len(terms[i].split())<6:
-        #             if len(re.search(company_names,terms[i].lower())[0])>4:
-        #                 present_employer = re.search(company_names,terms[i].lower())[0]
-        #                 break
-        if present_employer =="":
-            for i in range(len(terms)):
-                temp = terms[i] + " "
-                if re.search(us_states_short_text,temp) and len(terms[i].split())<10 :
-                    present_employer = temp
+#         terms = temp_terms
+#         # if present_employer =="":
+#         #     for i in range(len(terms)):
+#         #         if re.search(company_names,terms[i].lower()) and re.search("[A-Z]",terms[i]) and len(terms[i].split())<6:
+#         #             if len(re.search(company_names,terms[i].lower())[0])>4:
+#         #                 present_employer = re.search(company_names,terms[i].lower())[0]
+#         #                 break
+#         if present_employer =="":
+#             for i in range(len(terms)):
+#                 temp = terms[i] + " "
+#                 if re.search(us_states_short_text,temp) and len(terms[i].split())<10 :
+#                     present_employer = temp
 
-                    present_employer = re.sub("[^a-zA-Z\s]+"," ",present_employer)
-                    if len(present_employer.split())<3 :
-                        present_employer = ""
-                    break
-                if present_employer=="" and  re.search(us_states_full_text,temp) and len(terms[i].split())<6:
-                    present_employer = temp
+#                     present_employer = re.sub("[^a-zA-Z\s]+"," ",present_employer)
+#                     if len(present_employer.split())<3 :
+#                         present_employer = ""
+#                     break
+#                 if present_employer=="" and  re.search(us_states_full_text,temp) and len(terms[i].split())<6:
+#                     present_employer = temp
                 
-                    present_employer = re.sub("[^a-zA-Z\s]+"," ",present_employer)
-                    if len(present_employer.split())<3:
-                        present_employer = ""
-                    break
+#                     present_employer = re.sub("[^a-zA-Z\s]+"," ",present_employer)
+#                     if len(present_employer.split())<3:
+#                         present_employer = ""
+#                     break
 
-        if present_employer =="":
-            for i in range(len(terms)):
-                if re.search("at",terms[i].lower()):
-                    ind = terms[i].lower().index("at")
-                    temp = terms[i][ind:]
-                    present_employer = temp
+#         if present_employer =="":
+#             for i in range(len(terms)):
+#                 if re.search("at",terms[i].lower()):
+#                     ind = terms[i].lower().index("at")
+#                     temp = terms[i][ind:]
+#                     present_employer = temp
 
-            for i in range(len(terms)):
-                if re.search(company_end_titles,terms[i]) and len(terms[i].split())<6:
-                    match =  re.search(company_end_titles,terms[i])[0]
-                    present_employer=terms[i]
-                    break
-            if present_employer != "":
-                res =present_employer.split()
-                present_employer = ""
-                for i in range(len(res)):
-                    if match in res[i]:
-                        k = i 
-                        while(res[k][0].isupper()) and k >=0:
-                            present_employer = res[k]  +" "+present_employer 
-                            k =k-1
+#             for i in range(len(terms)):
+#                 if re.search(company_end_titles,terms[i]) and len(terms[i].split())<6:
+#                     match =  re.search(company_end_titles,terms[i])[0]
+#                     present_employer=terms[i]
+#                     break
+#             if present_employer != "":
+#                 res =present_employer.split()
+#                 present_employer = ""
+#                 for i in range(len(res)):
+#                     if match in res[i]:
+#                         k = i 
+#                         while(res[k][0].isupper()) and k >=0:
+#                             present_employer = res[k]  +" "+present_employer 
+#                             k =k-1
 
-            res = exp_text.split()
-            exp_text =""
-            for i in range(len(res)):
-                if re.search("[A-Z]",res[i][0]):
-                    exp_text += res[i]
-            if present_employer == "":
-                for i in range(len(res)):
-                    # words before the month or year
-                    if re.search(month_range,exp_text.lower()):
-                        temp_end_index = i
-                        if temp_end_index<end_index or end_index == -1:
-                            end_index = i
+#             res = exp_text.split()
+#             exp_text =""
+#             for i in range(len(res)):
+#                 if re.search("[A-Z]",res[i][0]):
+#                     exp_text += res[i]
+#             if present_employer == "":
+#                 for i in range(len(res)):
+#                     # words before the month or year
+#                     if re.search(month_range,exp_text.lower()):
+#                         temp_end_index = i
+#                         if temp_end_index<end_index or end_index == -1:
+#                             end_index = i
 
-                    if re.search(digit_year_range,exp_text.lower()) or end_index == -1:
-                        temp_end_index = i
-                        if temp_end_index<end_index:
-                            end_index = temp_end_index
+#                     if re.search(digit_year_range,exp_text.lower()) or end_index == -1:
+#                         temp_end_index = i
+#                         if temp_end_index<end_index:
+#                             end_index = temp_end_index
                     
-                    if re.search(month_range,exp_text.lower()) or end_index == -1:
-                        temp_end_index = i
-                        if temp_end_index<end_index:
-                            end_index = temp_end_index
+#                     if re.search(month_range,exp_text.lower()) or end_index == -1:
+#                         temp_end_index = i
+#                         if temp_end_index<end_index:
+#                             end_index = temp_end_index
                 
-                if res[end_index-1][0].isupper():
-                    present_employer = res[i-1]
-                if res[end_index-2][0].isupper():
-                    present_employer = res[i-2]+ " " +present_employer
-                if res[end_index-3][0].isupper():
-                    present_employer = res[i-3]+ " " +present_employer
+#                 if res[end_index-1][0].isupper():
+#                     present_employer = res[i-1]
+#                 if res[end_index-2][0].isupper():
+#                     present_employer = res[i-2]+ " " +present_employer
+#                 if res[end_index-3][0].isupper():
+#                     present_employer = res[i-3]+ " " +present_employer
                 
-                # words before location
+#                 # words before location
 
 
-        if present_employer != "":
-            present_employer = re.sub("[0-9]"," ",present_employer)
+#         if present_employer != "":
+#             present_employer = re.sub("[0-9]"," ",present_employer)
 
-        return present_employer
-    except:
-        return ""
-
-
-def extract_present_designation(exp_text,terms):
-    try:
-        present_designation = ""
-        terms = terms[:min(10,len(terms))]
-
-        for i in range(len(terms)):
-            temp =terms[i].lower()
-
-            if re.search(job_titles_list1,temp):
-                    present_designation =re.search(job_titles_list1,temp)[0]
-                    break
-        temp =""
-        # print(present_designation)
-        if present_designation =="":
-
-            for i in range(len(terms)):
-                temp = " " +terms[i] + " " 
-                if re.search(job_titles,temp.lower()) and  len(terms[i].split())<9:
-                    present_designation = temp
-                    break 
+#         return present_employer
+#     except:
+#         return ""
 
 
-        if present_designation == "":
-            exp_text = re.sub(":|,|\."," ",exp_text)
+# def extract_present_designation(exp_text,terms):
+#     try:
+#         present_designation = ""
+#         terms = terms[:min(10,len(terms))]
 
-            if re.search(job_titles,exp_text.lower()):
-                present_designation = re.search(job_titles,exp_text.lower())[0]
-                present_designation.capitalize()
-                for i in range(len(terms)):
-                    if re.search(present_designation.lower(),terms[i].lower()) and  len(terms[i].split())<9:
-                        present_designation = terms[i]
-                        break
-        if present_designation == "":
-            if re.search(present_designation.lower(),job_titles):
-                job_titles_match = re.search(present_designation.lower(),job_titles)[0]
-                jt_index = present_designation.lower().index(job_titles_match)
-                present_designation= present_designation[:jt_index]
+#         for i in range(len(terms)):
+#             temp =terms[i].lower()
+
+#             if re.search(job_titles_list1,temp):
+#                     present_designation =re.search(job_titles_list1,temp)[0]
+#                     break
+#         temp =""
+#         # print(present_designation)
+#         if present_designation =="":
+
+#             for i in range(len(terms)):
+#                 temp = " " +terms[i] + " " 
+#                 if re.search(job_titles,temp.lower()) and  len(terms[i].split())<9:
+#                     present_designation = temp
+#                     break 
+
+
+#         if present_designation == "":
+#             exp_text = re.sub(":|,|\."," ",exp_text)
+
+#             if re.search(job_titles,exp_text.lower()):
+#                 present_designation = re.search(job_titles,exp_text.lower())[0]
+#                 present_designation.capitalize()
+#                 for i in range(len(terms)):
+#                     if re.search(present_designation.lower(),terms[i].lower()) and  len(terms[i].split())<9:
+#                         present_designation = terms[i]
+#                         break
+#         if present_designation == "":
+#             if re.search(present_designation.lower(),job_titles):
+#                 job_titles_match = re.search(present_designation.lower(),job_titles)[0]
+#                 jt_index = present_designation.lower().index(job_titles_match)
+#                 present_designation= present_designation[:jt_index]
         
-        present_designation = re.sub(us_states_full_text,"",present_designation)
-        present_designation = re.sub("[0-9]","",present_designation)
-        present_designation = re.sub(us_states_short_text,"",present_designation)
+#         present_designation = re.sub(us_states_full_text,"",present_designation)
+#         present_designation = re.sub("[0-9]","",present_designation)
+#         present_designation = re.sub(us_states_short_text,"",present_designation)
 
 
-        return present_designation
-    except:
-        return ""
+#         return present_designation
+#     except:
+#         return ""
