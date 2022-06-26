@@ -6,6 +6,7 @@ click==8.0.1
 EbookLib==0.17.1
 extract-msg==0.23.1
 fastapi==0.65.2
+fuzzywuzzy
 h11==0.12.0
 IMAPClient==2.1.0
 olefile==0.46
