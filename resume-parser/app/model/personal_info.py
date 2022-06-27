@@ -1,5 +1,7 @@
 import re
 import os
+from fuzzywuzzy import fuzz
+from date_extractor import extract_dates
 
 
 city_names_india = [" abohar "," achalpur "," adilabad "," adityapur "," adoni "," adrymbai "," agartala "," agra "," ahmadabad "," ahmadnagar "," ahmed nagar "," ahmedabad "," aizawl "," ajmer "," akbarpur "," akola "," alandur "," alappuzha "," aligarh "," alirajpur "," allahabad "," almora "," alwar "," ambala "," ambala sadar "," ambarnath "," ambattur "," ambedkar nagar "," ambikapur "," ambur "," amravati "," amreli "," amritsar "," amroha "," anand "," anantapur "," ananthapur "," ananthnag "," anantnag "," angul "," anuppur "," araria "," ariyalur "," arlu "," arrah "," arwal "," asansol "," ashok nagar "," ashoknagar kalyangarh "," auraiya "," aurangabad "," aurangabad(bh) "," avadi "," azamgarh "," badlapur "," bagaha "," bagalkot "," bageshwar "," bagpat "," bahadurgarh "," baharampur "," bahraich "," baidyabati "," balaghat "," balangir "," baleshwar town "," baleswar "," ballia "," bally "," bally city "," balrampur "," balurghat "," banaskantha "," banda "," bandipur "," bangalore "," bangalore rural "," banka "," bankura "," bansberia "," banswara "," barabanki "," baramulla "," baran "," baranagar "," barasat "," baraut "," barddhaman "," bardhaman "," bareilly "," bargarh "," baripada town "," barmer "," barnala "," barpeta "," barrackpur "," barshi "," barwani "," basirhat "," bastar "," basti "," batala "," bathinda "," beawar "," beed "," begusarai "," belgaum "," bellary "," bengaluru "," bettiah "," betul "," bhadrak "," bhadravati "," bhadreswar "," bhagalpur "," bhalswa jahangir pur "," bhandara "," bharatpur "," bharuch "," bhatpara "," bhavnagar "," bhilai nagar "," bhilwara "," bhimavaram "," bhind "," bhiwadi "," bhiwandi "," bhiwani "," bhojpur "," bhopal "," bhubaneswar "," bhuj "," bhusawal "," bid "," bidar "," bidhan nagar "," biharsharif "," bijapur "," bijapur(cgh) "," bijapur(kar) "," bijnor "," bikaner "," bilaspur "," bilaspur (hp) "," bilaspur(cgh) "," birbhum "," bishnupur "," bokaro "," bokaro steel city "," bombay "," bongaigaon "," bongaon "," botad "," boudh "," brahmapur town "," budaun "," budgam "," bulandshahr "," buldhana "," bundi "," burari "," burhanpur "," buxar "," cachar "," central delhi "," chamba "," chamoli "," champawat "," champdani "," champhai "," chamrajnagar "," chandannagar "," chandauli "," chandausi "," chandel "," chandigarh "," chandrapur "," changlang "," chapra "," chas "," chatra "," chennai "," chhatarpur "," chhattarpur "," chhindwara "," chickmagalur "," chikkaballapur "," chikmagalur "," chilakaluripet "," chitradurga "," chitrakoot "," chittaurgarh "," chittoor "," chittorgarh "," churachandpur "," churu "," coimbatore "," cooch behar "," cuddalore "," cuddapah "," cuttack "," dabgram "," dadra & nagar haveli "," dahod "," dakshina kannada "," dallo pura "," daman "," damoh "," dantewada "," darbhanga "," darjiling "," darrang "," datia "," dausa "," davanagere "," davangere "," debagarh "," deesa "," dehradun "," dehri "," delhi "," delhi cantonment "," deoghar "," deoli "," deoria "," dewas "," dhalai "," dhamtari "," dhanbad "," dhar "," dharmapuri "," dharmavaram "," dharwad "," dhaulpur "," dhemaji "," dhenkanal "," dholpur "," dhubri "," dhule "," dibang valley "," dibrugarh "," dimapur "," dinapur nizamat "," dindigul "," dindori "," diu "," doda "," dum dum "," dumka "," dungarpur "," durg "," durgapur "," east champaran "," east delhi "," east garo hills "," east godavari "," east kameng "," east khasi hills "," east midnapore "," east nimar "," east siang "," east sikkim "," east singhbhum "," eluru "," english bazar "," ernakulam "," erode "," etah "," etawah "," faizabad "," faridabad "," faridkot "," farrukhabad "," farrukhabad-cum-fatehgarh "," fatehabad "," fatehgarh sahib "," fatehpur "," fazilka "," firozabad "," firozpur "," gadag "," gadag-betigeri "," gadchiroli "," gajapati "," gandhi nagar "," gandhidham "," gandhinagar "," ganganagar "," gangapur city "," gangawati "," ganj "," ganjam "," garhwa "," gariaband "," gautam buddha nagar "," gaya "," ghaziabad "," ghazipur "," giridh "," giridih "," goalpara "," godda "," godhra "," gokal pur "," golaghat "," gonda "," gondal "," goas "," gondia "," gondiya "," gopalganj "," gorakhpur "," greater hyderabad "," greater mumbai "," greater noida "," gudivada "," gulbarga "," gumla "," guna "," guntakal "," guntur "," gurdaspur "," gurgaon "," gurugram "," guwahati "," gwalior "," habra "," hailakandi "," hajipur "," haldia "," haldwani-cum-kathgodam "," halisahar "," hamirpur "," hamirpur(hp) "," hanumangarh "," haora "," hapur "," harda "," hardoi "," hardwar "," haridwar "," hassan "," hastsal "," hathras "," haveri "," hazaribag "," hindaun "," hindupur "," hinganghat "," hingoli "," hisar "," hooghly "," hoshangabad "," hoshiarpur "," hospet "," hosur "," howrah "," hubli-dharwad "," hugli-chinsurah "," hyderabad "," ichalkaranji "," idukki "," imphal "," imphal east "," imphal west "," indore "," jabalpur "," jagadhri "," jagatsinghapur "," jagdalpur "," jaintia hills "," jaipur "," jaisalmer "," jajapur "," jalandhar "," jalaun "," jalgaon "," jalna "," jalor "," jalpaiguri "," jamalpur "," jammu "," jamnagar "," jamshedpur "," jamtara "," jamui "," jamuria "," janjgir-champa "," jashpur "," jaunpur "," jehanabad "," jetpur navagadh "," jhabua "," jhajjar "," jhalawar "," jhansi "," jharsuguda "," jhujhunu "," jhunjhunun "," jind "," jodhpur "," jorhat "," junagadh "," jyotiba phule nagar "," k.v.rangareddy "," kachchh "," kadapa "," kaimur (bhabua) "," kaithal "," kakinada "," kalahandi "," kalol "," kalyani "," kamarhati "," kamrup "," kancheepuram "," kanchipuram "," kanchrapara "," kandhamal "," kangra "," kanker "," kannauj "," kannur "," kanpur "," kanpur city "," kanpur dehat "," kanpur nagar "," kanyakumari "," kapurthala "," karaikal "," karaikkudi "," karauli "," karawal nagar "," karbi anglong "," kargil "," karim nagar "," karimganj "," karimnagar "," karnal "," karur "," kasargod "," kasganj "," kashipur "," kathua "," katihar "," katni "," kaushambi "," kawardha "," kendrapara "," kendujhar "," khagaria "," khammam "," khandwa "," khanna "," kharagpur "," khardaha "," khargone "," kheda "," kheri "," khora "," khorda "," khunti "," khurja "," kinnaur "," kiphire "," kirari suleman nagar "," kishanganj "," kishangarh "," kochi "," kodagu "," koderma "," kohima "," kokrajhar "," kolar "," kolasib "," kolhapur "," kolkata "," kollam "," koppal "," koraput "," korba "," koriya "," kota "," kottayam "," kozhikode "," krishna "," krishnagiri "," krishnanagar "," kulgam "," kullu "," kulti "," kumbakonam "," kupwara "," kurichi "," kurnool "," kurukshetra "," kurung kumey "," kushinagar "," lahul & spiti "," lakhimpur "," lakhisarai "," lakshadweep "," lalitpur "," latehar "," latur "," lawngtlai "," leh "," lohardaga "," lohit "," longleng "," loni "," lower subansiri "," lucknow "," ludhiana "," lunglei "," machilipatnam "," madanapalle "," madavaram "," madhepura "," madhubani "," madhyamgram "," madurai "," mahabub nagar "," maharajganj "," mahasamund "," mahbubnagar "," mahe "," mahendragarh "," mahesana "," maheshtala "," mahoba "," mainpuri "," malappuram "," malda "," malegaon "," malerkotla "," malkangiri "," mammit "," mandi "," mandla "," mandoli "," mandsaur "," mandya "," mangalore "," mango "," mansa "," marigaon "," mathura "," maunath bhanjan "," mayurbhanj "," medak "," medinipur "," meerut "," mira bhayander "," miryalaguda "," mirzapur "," mirzapur-cum-vindhyachal "," modinagar "," moga "," mohali "," mokokchung "," mon "," moradabad "," morena "," morvi "," motihari "," mughalsarai "," muktsar "," mumbai "," munger "," murshidabad "," murwara "," mustafabad "," muzaffarnagar "," muzaffarpur "," mysore "," nabadwip "," nabarangapur "," nadia "," nadiad "," nagaon "," nagapattinam "," nagaur "," nagda "," nagercoil "," nagpur "," naihati "," nainital "," nalanda "," nalbari "," nalgonda "," namakkal "," nanded "," nanded waghala "," nandurbar "," nandyal "," nangloi jat "," narasaraopet "," narayanpur "," narmada "," narsinghpur "," nashik "," navi mumbai "," navsari "," nawada "," nawanshahr "," nayagarh "," neemuch "," nellore "," new delhi "," neyveli "," nicobar "," nilgiris "," nizamabad "," noida "," north 24 parganas "," north and middle andaman "," north barrackpur "," north cachar hills "," north delhi "," north dinajpur "," north dum dum "," north goa "," north sikkim "," north tripura "," north west delhi "," nuapada "," ongole "," orai "," osmanabad "," ozhukarai "," pakur "," palakkad "," palamau "," palanpur "," pali "," pallavaram "," palwal "," panch mahals "," panchkula "," panihati "," panipat "," panna "," panvel "," papum pare "," parbhani "," patan "," pathanamthitta "," pathankot "," patiala "," patna "," pauri garhwal "," perambalur "," peren "," phek "," pilibhit "," pimpri chinchwad "," pithampur "," pithoragarh "," pondicherry "," poonch "," porbandar "," port blair "," prakasam "," pratapgarh "," proddatur "," puducherry "," pudukkottai "," pulwama "," pune "," puri "," purnia "," puruliya "," rae bareli "," raebareli "," raichur "," raiganj "," raigarh "," raigarh(mh) "," raipur "," raisen "," rajahmundry "," rajapalayam "," rajarhat gopalpur "," rajauri "," rajgarh "," rajkot "," rajnandgaon "," rajpur sonarpur "," rajsamand "," ramagundam "," ramanagar "," ramanathapuram "," ramgarh "," rampur "," ranchi "," ranibennur "," raniganj "," ratlam "," ratnagiri "," raurkela industrial township "," raurkela town "," rayagada "," reasi "," rewa "," rewari "," ri bhoi "," rishra "," robertson pet "," rohtak "," rohtas "," roorkee "," ropar "," rudraprayag "," rudrapur "," rupnagar "," s.a.s. nagar "," sabarkantha "," sagar "," saharanpur "," saharsa "," sahibganj "," saiha "," salem "," samastipur "," sambalpur "," sambhal "," sangli "," sangli miraj kupwad "," sangrur "," sant kabir nagar "," sant ravidas nagar "," santipur "," saran "," sasaram "," satara "," satna "," sawai madhopur "," secunderabad "," sehore "," senapati "," seoni "," seraikela-kharsawan "," serampore "," serchhip "," shahdol "," shahjahanpur "," shajapur "," shamli "," sheikhpura "," sheohar "," sheopur "," shikohabad "," shillong "," shimla "," shimoga "," shivpuri "," shrawasti "," sibsagar "," siddharthnagar "," sidhi "," sikar "," silchar "," siliguri "," simdega "," sindhudurg "," singrauli "," sirmaur "," sirohi "," sirsa "," sitamarhi "," sitapur "," sivaganga "," siwan "," solan "," solapur "," sonapur "," sonbhadra "," sonipat "," sonitpur "," south 24 parganas "," south andaman "," south delhi "," south dinajpur "," south dum dum "," south garo hills "," south goa "," south sikkim "," south tripura "," south west delhi "," srikakulam "," srinagar "," sujangarh "," sultan pur majra "," sultanpur "," sundergarh "," supaul "," surat "," surendra nagar "," surendranagar dudhrej "," surguja "," suryapet "," tadepalligudem "," tadpatri "," tambaram "," tamenglong "," tapi "," tarn taran "," tawang "," tehri garhwal "," tenali "," thane "," thanesar "," thanjavur "," the dangs "," theni "," thiruvananthapuram "," thoothukkudi "," thoubal "," thrissur "," tikamgarh "," tinsukia "," tirap "," tiruchirappalli "," tirunelveli "," tirupati "," tiruppur "," tiruvallur "," tiruvannamalai "," tiruvarur "," tiruvottiyur "," titagarh "," tonk "," tuensang "," tumkur "," tuticorin "," udaipur "," udgir "," udham singh nagar "," udhampur "," udupi "," ujjain "," ukhrul "," ulhasnagar "," uluberia "," umaria "," una "," unnao "," upper siang "," upper subansiri "," urwati "," uttara kannada "," uttarkashi "," uttarpara kotrung "," vadodara "," vaishali "," valsad "," varanasi "," vasai virar city "," vellore "," veraval "," vidisha "," vijayawada "," villupuram "," virudhunagar "," visakhapatnam "," vizianagaram "," warangal "," wardha "," washim "," wayanad "," west champaran "," west delhi "," west garo hills "," west godavari "," west kameng "," west khasi hills "," west midnapore "," west nimar "," west siang "," west sikkim "," west singhbhum "," west tripura "," wokha "," yadgir "," yamuna nagar "," yamunanagar "," yavatmal "," zunhebotto "]
@@ -117,20 +119,36 @@ def extract_address(text,phone_number):
 
         return address,country_code
 
-def extract_dob(text):
+def extract_dob(text,terms):
     try:
         birth_date = ""
         match_dob=""
         dob_words = "Born on|Date of birth|Birth|DOB :|DOB|DOB:|DATE OF BIRTH|Birth Date|Birth :|D.O.B|d. o. b|d o b|d  o  b|date and place of birth:|date and place of birth|date and country of birth|dateofbirth|data of birth|date of  birth|birthdate|date of birth/age:|date of birth/age|date of birthage|b\\'date|b’date|date  of  birth|date of birth|date ofbirth|dob|date & place of birth|d.o.b|date of birth|date-of-birth|date   of   birth|BORN:"
+        
         date_text = ""
-        if re.search(dob_words,text):
-            date_end = re.search(dob_words,text).end() 
-            date_text = text[date_end:date_end+20]
-            if re.search("\d{4}",date_text):
-                date_end = re.search("\d{4}",date_text).end()
-                date_text =date_text[:date_end]
-            if not re.search("\d{4}|\d{2}",date_text):
-                date_text= ""
+        d=["DOB","dob","DATE OF BIRTH","date of birth","birth","Born on","Date of birth","Birth","DOB :","DOB","DOB:","DATE OF BIRTH","Birth Date","Birth :","D.O.B","d. o. b","d o b","d  o  b","date and place of birth:","date and place of birth","date and country of birth","dateofbirth","data of birth","date of  birth","birthdate","date of birth/age:","date of birth/age","date of birthage","b\\'date","b’date","date  of  birth","date of birth","date ofbirth","dob","date & place of birth","d.o.b","date of birth","date-of-birth","date   of   birth","BORN:"]
+        
+        for i in range(len(terms)):
+            threshold = 44
+            result = fuzz.token_set_ratio(terms[i],d)
+            
+            if result>=threshold and result!=100:
+                print(terms[i])
+                for j in range(i,len(terms)):
+                    print(terms[j])
+                    if re.search("\d{2}",terms[j]):
+                        date_text = terms[j]
+                        date_text= str(extract_dates(date_text))
+
+                        break
+        # if re.search(dob_words,text):
+        #     date_end = re.search(dob_words,text).end() 
+        #     date_text = text[date_end:date_end+20]
+        #     if re.search("\d{4}",date_text):
+        #         date_end = re.search("\d{4}",date_text).end()
+        #         date_text =date_text[:date_end]
+        #     if not re.search("\d{4}|\d{2}",date_text):
+        #         date_text= ""
 
         
         return date_text
@@ -144,7 +162,7 @@ def extract_gender(text):
 
         if re.search(re_gender,text):
             gender =re.search(re_gender,text)[0]
-
+            
         return gender
     except:
         return ""
@@ -152,10 +170,11 @@ def extract_gender(text):
 def passport_no(text):
     try:
         pno=""
-        passport_regex = "[A-PR-WY][1-9]\\d" +\
-                "\\s?\\d{4}[1-9]"
-        if re.search(passport_regex,text):
-            pno =  re.search(passport_regex,text)[0]
+        if "passport" in text.lower():
+            passport_regex = "^[A-PR-WY][1-9]\\d" +\
+                    "\\s?\\d{4}[1-9]"
+            if re.search(passport_regex,text):
+                pno =  re.search(passport_regex,text)[0]
 
         return pno 
     except:
