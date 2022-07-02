@@ -93,8 +93,7 @@ def main(file_name, file_type):
     # try:
 
     s = textract.process(file_name)
-    if os.path.exists(file_name):
-        os.remove(file_name)
+
     filename = re.sub("pdf|doc|docx|\.", "", file_name)
 
     text = str(s, 'utf-8', 'ignore')
