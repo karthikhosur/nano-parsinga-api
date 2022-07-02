@@ -11,7 +11,7 @@ from .industry import industry_class
 import concurrent.futures
 from PIL import Image
 import time
-
+import os
 result_template = {
     "personal_info": [
         {
