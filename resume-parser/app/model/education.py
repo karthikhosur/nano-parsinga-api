@@ -113,6 +113,7 @@ def education_txt(terms):
 def extract_education(terms,text):
     # try:
         edu_result = {"edu_text":"",
+        "edu_terms":[],
         "edu_history":
         [{"id": "",
         "degree": "",
@@ -140,7 +141,7 @@ def extract_education(terms,text):
 
 
         edu_result["edu_text"] = edu_text
-
+        edu_result["edu_terms"] = terms
         edu_result["edu_history"][0]["id"]="0"
         edu_result["edu_history"][0]["degree"]=degree_title
         edu_result["edu_history"][0]["university"]=university
